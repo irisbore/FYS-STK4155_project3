@@ -1,0 +1,5 @@
+torch==2.5.1
+tqdm==4.67.0
+pyyaml==6.0.2
+git-python==1.0.3
+pandas==2.2.3
