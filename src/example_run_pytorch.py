@@ -11,7 +11,7 @@ from sklearn.datasets import load_breast_cancer
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
-from src.utils import CNN as cnn
+from models import CNN as cnn
 from src.utils import utils, load_data
 
 """
