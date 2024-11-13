@@ -11,8 +11,8 @@ from sklearn.datasets import load_breast_cancer
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
-from utils import CNN as cnn
-from src.utils import utils
+from src.utils import CNN as cnn
+from src.utils import utils, load_data
 
 """
 Template to show how you can load from config and use the existing CNN class. 
@@ -24,15 +24,15 @@ if __name__ == "__main__":
     )
 
     config = utils.get_config(config_path)
-    #if config["data_path"]:
-        #df = pd.read_csv(PATH_TO_ROOT + config["data_path"])
+
+    #df = pd.read_csv(PATH_TO_ROOT + config["data_path"])
 
     rs = np.random.RandomState(config["seed"])
 
     torch.manual_seed(config["seed"]) 
 
     X, y = load_breast_cancer(return_X_y=True)
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=rs)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=config["test_size"], random_state=rs)
 
     X_train_tensor = torch.tensor(X_train, dtype=torch.float32)
     y_train_tensor = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)
