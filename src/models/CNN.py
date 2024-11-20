@@ -36,6 +36,7 @@ class CNN(nn.Module):
         self.layers.append(nn.Linear(input_size, node_size))  #Input
         self.activation_func = None 
 
+        #nn.Conv2d
         if activation == 'relu':
             self.activation_func = nn.ReLU()
         elif activation == 'leaky_relu':
