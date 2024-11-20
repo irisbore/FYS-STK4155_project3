@@ -12,7 +12,7 @@ PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
 from src.utils import utils, load_data
-
+from src.models import LogisticRegression
 
 if __name__ == "__main__":
     config_path = utils.get_config_path(
@@ -35,7 +35,7 @@ if __name__ == "__main__":
     print(f'number of samples: {n_samples}, number of features: {n_features}')
 
     # split data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=1234)
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=config["test_size"], random_state=1234)
 
     # scale data
     sc = StandardScaler()
