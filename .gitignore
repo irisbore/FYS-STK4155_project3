@@ -4,3 +4,5 @@
 faces/
 __pycache__/
 non-deliverables/*
+saved_models/
+data/
