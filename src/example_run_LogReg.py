@@ -2,79 +2,65 @@ import sys
 import git
 import torch
 import torch.nn as nn
-from sklearn import datasets
-from sklearn.preprocessing import StandardScaler  # for feature scaling
 import numpy as np
-from sklearn.model_selection import train_test_split  # for train/test split
 
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
 from src.utils import utils, load_data
-from src.models import LogisticRegression
+from src.models.LogisticRegression import LogisticRegression
 
 if __name__ == "__main__":
     config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/run_nn.yaml"
+        default_path=PATH_TO_ROOT + "/src/run_LogReg.yaml"
     )
 
     config = utils.get_config(config_path)
+    torch.manual_seed(config["seed"])
 
-    #df = pd.read_csv(PATH_TO_ROOT + config["data_path"])
+    # Load MNIST data
+    batch_size = 64
+    _, _, trainloader, testloader = load_data.load_transform_MNIST(batch_size=batch_size)
 
-    rs = np.random.RandomState(config["seed"])
-
-    torch.manual_seed(config["seed"]) 
-
-    # Prepare data
-    bc = datasets.load_breast_cancer()
-    X, y = bc.data, bc.target
-
-    n_samples, n_features = X.shape
-    print(f'number of samples: {n_samples}, number of features: {n_features}')
-
-    # split data
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=config["test_size"], random_state=1234)
-
-    # scale data
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
-
-    # convert to tensors
-    X_train = torch.from_numpy(X_train.astype(np.float32))
-    X_test = torch.from_numpy(X_test.astype(np.float32))
-    y_train = torch.from_numpy(y_train.astype(np.float32))
-    y_test = torch.from_numpy(y_test.astype(np.float32))
-
-    # reshape y tensors
-    y_train = y_train.view(y_train.shape[0], 1)
-    y_test = y_test.view(y_test.shape[0], 1)
-
-    model = LogisticRegression(n_features)
-
+    # Create model
+    model = LogisticRegression()
+    
     # Loss and optimizer
-    learning_rate = 0.01
-    criterion = nn.BCELoss()
-    optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+    criterion = nn.NLLLoss()  # Negative Log Likelihood Loss for log_softmax output
+    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
 
-    # training loop
-    num_epochs = 100
+    # Training loop
+    n_epochs = 10
+    n_total_steps = len(trainloader)
 
-    for epoch in range(num_epochs):
-        # forward pass and loss
-        y_predicted = model(X_train)
-        loss = criterion(y_predicted, y_train)
-        
-        # backward pass
-        loss.backward()
-        
-        # updates
-        optimizer.step()
-        
-        # zero gradients
-        optimizer.zero_grad()
-        
-        if (epoch+1) % 10 == 0:
-            print(f'epoch: {epoch+1}, loss = {loss.item():.4f}')
+    for epoch in range(n_epochs):
+        model.train()
+        for i, (images, labels) in enumerate(trainloader):
+            # Forward pass
+            outputs = model(images)
+            loss = criterion(outputs, labels)
+            
+            # Backward and optimize
+            optimizer.zero_grad()
+            loss.backward()
+            optimizer.step()
+            
+            if (i+1) % 100 == 0:
+                print(f'Epoch [{epoch+1}/{n_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
+
+    print('Finished Training')
+
+    # Test the model
+    model.eval()
+    with torch.no_grad():
+        n_correct = 0
+        n_samples = 0
+        for images, labels in testloader:
+            outputs = model(images)
+            _, predicted = torch.max(outputs.data, 1)
+            n_samples += labels.size(0)
+            n_correct += (predicted == labels).sum().item()
+
+        acc = 100.0 * n_correct / n_samples
+        print(f'Accuracy of the model on the test images: {acc} %')
