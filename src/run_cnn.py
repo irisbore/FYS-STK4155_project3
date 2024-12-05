@@ -12,9 +12,13 @@ from src.models.CNN import Net
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
+# Vary seeds, num_epochs, optimizer function
+torch.manual_seed(1)
+
 def set_loss(model, lr=0.001, momentum=0.9):
     criterion = nn.CrossEntropyLoss()
-    optimizer = optim.SGD(model.parameters())
+    #optimizer = optim.SGD(model.parameters())  #should we use Adam and set learning rate?
+    optimizer = torch.optim.Adam(model.parameters(), lr=0.001)
     return criterion, optimizer
 
 
