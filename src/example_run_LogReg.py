@@ -3,7 +3,7 @@ import git
 import torch
 import torch.nn as nn
 import numpy as np
-
+import matplotlib.pyplot as plt
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -11,47 +11,21 @@ sys.path.append(PATH_TO_ROOT)
 from src.utils import utils, load_data
 from src.models.LogisticRegression import LogisticRegression
 
-if __name__ == "__main__":
-    config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/run_LogReg.yaml"
-    )
-
-    config = utils.get_config(config_path)
-    torch.manual_seed(config["seed"])
-
-    # Load MNIST data
-    batch_size = 64
-    _, _, trainloader, testloader = load_data.load_transform_MNIST(batch_size=batch_size)
-
-    # Create model
-    model = LogisticRegression()
-    
-    # Loss and optimizer
-    criterion = nn.NLLLoss()  # Negative Log Likelihood Loss for log_softmax output
-    optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
-
+def train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs):
     # Training loop
-    n_epochs = 10
     n_total_steps = len(trainloader)
-
+    
     for epoch in range(n_epochs):
         model.train()
         for i, (images, labels) in enumerate(trainloader):
-            # Forward pass
             outputs = model(images)
             loss = criterion(outputs, labels)
             
-            # Backward and optimize
             optimizer.zero_grad()
             loss.backward()
             optimizer.step()
-            
-            if (i+1) % 100 == 0:
-                print(f'Epoch [{epoch+1}/{n_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
-
-    print('Finished Training')
-
-    # Test the model
+    
+    # Evaluate
     model.eval()
     with torch.no_grad():
         n_correct = 0
@@ -63,4 +37,75 @@ if __name__ == "__main__":
             n_correct += (predicted == labels).sum().item()
 
         acc = 100.0 * n_correct / n_samples
-        print(f'Accuracy of the model on the test images: {acc} %')
+    return acc
+
+def plot_parameter_study(param_values, accuracies, param_name):
+    plt.figure(figsize=(10, 6))
+    plt.plot(param_values, accuracies, 'bo-')
+    plt.xlabel(param_name)
+    plt.ylabel('Accuracy (%)')
+    plt.title(f'Impact of {param_name} on Model Accuracy')
+    plt.grid(True)
+    plt.savefig(f'results/{param_name.lower().replace(" ", "_")}_study.png')
+    plt.close()
+
+if __name__ == "__main__":
+    config_path = utils.get_config_path(
+        default_path=PATH_TO_ROOT + "/src/run_LogReg.yaml"
+    )
+
+    config = utils.get_config(config_path)
+    torch.manual_seed(config["seed"])
+
+    # Get parameter lists from config
+    learning_rates = config["learning_rates"]
+    batch_sizes = config["batch_sizes"]
+    epochs_list = config["epochs_list"]
+
+    # Lists to store results
+    lr_accuracies = []
+    batch_accuracies = []
+    epoch_accuracies = []
+
+    # 1. Learning Rate Study
+    print("\nPerforming Learning Rate Study...")
+    for lr in learning_rates:
+        _, _, trainloader, testloader = load_data.load_transform_MNIST(batch_size=64)
+        model = LogisticRegression()
+        criterion = nn.NLLLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=lr)
+        
+        acc = train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs=10)
+        lr_accuracies.append(acc)
+        print(f"Learning Rate: {lr}, Accuracy: {acc:.2f}%")
+
+    # 2. Batch Size Study
+    print("\nPerforming Batch Size Study...")
+    for bs in batch_sizes:
+        _, _, trainloader, testloader = load_data.load_transform_MNIST(batch_size=bs)
+        model = LogisticRegression()
+        criterion = nn.NLLLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+        
+        acc = train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs=10)
+        batch_accuracies.append(acc)
+        print(f"Batch Size: {bs}, Accuracy: {acc:.2f}%")
+
+    # 3. Epochs Study
+    print("\nPerforming Epochs Study...")
+    _, _, trainloader, testloader = load_data.load_transform_MNIST(batch_size=64)
+    for epochs in epochs_list:
+        model = LogisticRegression()
+        criterion = nn.NLLLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=0.01)
+        
+        acc = train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs=epochs)
+        epoch_accuracies.append(acc)
+        print(f"Epochs: {epochs}, Accuracy: {acc:.2f}%")
+
+    # Create plots
+    plot_parameter_study(learning_rates, lr_accuracies, "Learning Rate")
+    plot_parameter_study(batch_sizes, batch_accuracies, "Batch Size")
+    plot_parameter_study(epochs_list, epoch_accuracies, "Number of Epochs")
+
+    print("\nParameter study completed. Plots have been saved.")

@@ -7,3 +7,4 @@ non-deliverables/*
 saved_models/
 data/
 .vscode/
+venv/

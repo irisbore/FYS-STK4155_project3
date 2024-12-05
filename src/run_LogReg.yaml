@@ -1,4 +1,10 @@
 seed: 42
-learning_rate: 0.01
-batch_size: 64
-epochs: 10
+
+# Learning rate values to test
+learning_rates: [0.001, 0.01, 0.1, 0.5, 1.0]
+
+# Batch size values to test
+batch_sizes: [16, 32, 64, 128, 256]
+
+# Number of epochs to test
+epochs_list: [5, 10, 15, 20, 25]
