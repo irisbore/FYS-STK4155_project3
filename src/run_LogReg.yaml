@@ -1,7 +1,7 @@
 seed: 42
 
 # Learning rate values to test
-learning_rates: [0.001, 0.01, 0.1, 0.5, 1.0]
+learning_rates: [0.00001,0.0001,0.001, 0.01, 0.1]
 
 # Batch size values to test
 batch_sizes: [16, 32, 64, 128, 256]
