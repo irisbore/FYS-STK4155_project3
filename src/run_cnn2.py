@@ -8,9 +8,10 @@ from models.grid_search_CNN import ConvNet
 import utils.load_data as ld
 
 #hyperparameters
-learning_rate = 10e-3
+learning_rate = 1e-3
 epochs = 2
 torch.manual_seed(1)
+print_interval = 2000
 #potentially add loss calculation and optimizer chooser
 layer_configs = (
     {
@@ -67,11 +68,20 @@ if __name__ == "__main__":
 
     for epoch in range(epochs):
         running_loss = 0.0
-        for i, data in enumerate(trainloader, 0):
+        for i, data in enumerate(trainloader):
             inputs, labels = data #list of [inputs, labels]
-            optimizer.zero_grad
+            optimizer.zero_grad()
 
             #forward
             outputs = net(inputs)
             loss = criterion(outputs, labels)
             loss.backward()
+            optimizer.step()
+
+            # print stats
+            running_loss += loss.item()
+            if i % print_interval == print_interval-1: #print every interval
+                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+                running_loss = 0.0
+            
+    print("Finished Training")
