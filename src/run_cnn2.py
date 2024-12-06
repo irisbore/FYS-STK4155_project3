@@ -17,22 +17,22 @@ layer_configs = (
     {
         'type':  "conv",
         'in_channels': 1,
-        'out_channels': 6,
+        'out_channels': 32,
         'kernel_size': 5,
         'activation': "ReLU",
         'pooling': 2
     },
     {
         'type':  "conv",
-        'in_channels': 6,
-        'out_channels': 16,
+        'in_channels': 32,
+        'out_channels': 64,
         'kernel_size': 5,
         'activation': "ReLU",
         'pooling': 2
     },
     {
         'type':  "linear",
-        'in_features': 16*4*4, #256
+        'in_features': 64*4*4, #256
         'out_features': 120,
         'activation': "ReLU",
     },
@@ -66,6 +66,7 @@ if __name__ == "__main__":
 
     criterion, optimizer = set_loss_optim(net)
 
+    #train
     for epoch in range(epochs):
         running_loss = 0.0
         for i, data in enumerate(trainloader):
@@ -83,5 +84,19 @@ if __name__ == "__main__":
             if i % print_interval == print_interval-1: #print every interval
                 print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
                 running_loss = 0.0
+    
+    #test
+    correct = 0
+    total = 0
+    with torch.no_grad():
+        for data in testloader:
+            inputs, labels = data
+            outputs = net(inputs)
+            #max along columns -> max value, index (only care about index)
+            _, predicted = torch.max(outputs.data, 1)
+            total += labels.size(0)
+            correct += (predicted == labels).sum().item()
+
             
     print("Finished Training")
+    
