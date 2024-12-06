@@ -10,10 +10,13 @@ class ConvNet(nn.Module):
         Args:
             layer_configs (list of dict): each dict is the config of a layer
                 'type' = either "conv", "linear"
-                'in_features' = input dimensions
-                'out_features' = output dimensions
-                'in_channels' = input dimensions for conv
-                'out_channels' = output dimensions for conv
+                #linear
+                    'in_features' = input dimensions
+                    'out_features' = output dimensions
+                #conv
+                    'in_channels' = input dimensions for conv
+                    'out_channels' = output dimensions for conv
+                    'kernel_size' = kernel size for conv
                 'activation' = either "sigmoid", "ReLU" or undefined/None
                 'pooling' = undefined if none, kernel_size: int if you want pooling
             (including activation function and pooling)
