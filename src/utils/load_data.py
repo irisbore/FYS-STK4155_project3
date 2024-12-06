@@ -1,5 +1,4 @@
 import sys 
-
 import numpy as np
 import git
 import matplotlib.pyplot as plt
@@ -8,6 +7,7 @@ from PIL import Image
 import torch
 import torchvision
 import torchvision.transforms as transforms
+from torch.utils.data import Subset, DataLoader
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -30,9 +30,9 @@ def imshow(img):
 
 def load_transform_MNIST(batch_size:int=4):
     transform = transforms.Compose(
-        [transforms.ToTensor(),
-        transforms.Normalize((0.5), (0.5))]
-        )
+    [transforms.ToTensor(),
+    transforms.Normalize((0.5), (0.5))]
+    )
     
     # Return a tensor for training
     trainset = torchvision.datasets.MNIST(root='./data', train=True,
@@ -48,6 +48,25 @@ def load_transform_MNIST(batch_size:int=4):
                                             shuffle=False, num_workers=2)
 
     return trainset, testset, trainloader, testloader
+
+def load_train_test_val(batch_size, validation=False):
+    transform = transforms.Compose([
+        transforms.ToTensor()
+        ])
+    train_dataset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', split='train', download=True, transform=transform)
+    if validation: 
+        val_dataset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', split='validation',transform=transform, download=False)
+        val_loader = DataLoader(val_dataset, batch_size, shuffle=False)
+    
+    train_loader = DataLoader(train_dataset, batch_size, shuffle=True)
+    test_loader = torch.utils.data.DataLoader(test_dataset, batch_size=64, shuffle=False)
+    test_dataset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', split='test',transform=transform, download=False)
+
+    # val_dataset = Subset(train_dataset,
+    #                             torch.arange(10000))
+    # train_dataset = Subset(train_dataset,
+    #                             torch.arange(10000, len(mnist_dataset)))
+
 
 if __name__ == "__main__":
     # get some random training images
