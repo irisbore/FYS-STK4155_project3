@@ -85,13 +85,13 @@ class ConvNet(nn.Module):
                 kernel = config['kernel_size']
                 padding = config.get('padding', 0) #if we add padding
                 stride = config.get('stride', 1)
-                size = (size - kernel + padding*2)/stride + 1
+                size = int((size - kernel + padding*2)/stride + 1)
             
             pooling = config.get('pooling', None)
             if pooling:
                 stride = 2
                 kernel = pooling
-                size = (size - kernel)/stride + 1
+                size = int((size - kernel)/stride + 1)
         
         #flatten
         return int(size ** 2 * channels)
