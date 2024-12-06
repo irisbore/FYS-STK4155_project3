@@ -29,7 +29,7 @@ class ConvNet(nn.Module):
             #hidden layer
             if config['type'] == "linear":
                 if not any(isinstance(layer, nn.Flatten) for layer in self.layers):
-                    self.layers.append(nn.Flatten())
+                    self.layers.append(nn.Flatten(start_dim=1)) #all execept batch
                 self.layers.append(nn.Linear(config['in_features'], config['out_features']))
             elif config['type'] == "conv":
                 inc = config['in_channels']
