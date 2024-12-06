@@ -2,9 +2,12 @@ import os
 import sys
 import yaml
 import argparse
-import numpy as np
 from typing import List, Tuple, Dict
 
+import numpy as np
+import torch.nn as nn
+import torch.optim as optim
+import torch
 
 def get_config(path) -> Dict:
     """
@@ -50,3 +53,7 @@ def get_config_path(default_path=None) -> str:
         print('Using default config')
     return config_path
 
+def set_loss_optim(model, lr: float):
+    criterion = nn.CrossEntropyLoss()
+    optimizer  = torch.optim.Adam(model.parameters(), lr=lr)
+    return criterion, optimizer

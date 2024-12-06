@@ -28,10 +28,10 @@ class ConvNet(nn.Module):
             
             #hidden layer
             if config['type'] == "linear":
-                if not any(isinstance(layer, nn.Flatten) for layer in self.layers):
+                if not any(isinstance(layer, nn.Flatten) for layer in self.layers): # -> size = height x width x channels
                     self.layers.append(nn.Flatten(start_dim=1)) #all execept batch
                 self.layers.append(nn.Linear(config['in_features'], config['out_features']))
-            elif config['type'] == "conv":
+            elif config['type'] == "conv": #stride = 1, padding = 0 (default)
                 inc = config['in_channels']
                 outc = config['out_channels']
                 k_sz = config['kernel_size']
@@ -44,7 +44,7 @@ class ConvNet(nn.Module):
                     self.layers.append(act) #adds activation as the next "layer"
 
             #pooling
-            pooling = config.get('pooling', None)
+            pooling = config.get('pooling', None) #stride = 2
             if pooling:
                 self.layers.append(nn.MaxPool2d(pooling))
 
