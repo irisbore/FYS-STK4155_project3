@@ -21,7 +21,7 @@ class ConvNet(nn.Module):
         super(ConvNet, self).__init__()
         self.layers = nn.ModuleList()
 
-        for idx, config in enumerate(layer_configs):
+        for config in layer_configs:
             
             #hidden layer
             if config['type'] == "linear":
