@@ -32,7 +32,7 @@ layer_configs = (
     },
     {
         'type':  "linear",
-        'in_features': 64*4*4, #256
+        'in_features': 64*4*4, #1024
         'out_features': 120,
         'activation': "ReLU",
     },
