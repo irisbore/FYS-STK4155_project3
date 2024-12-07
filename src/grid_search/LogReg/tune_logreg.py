@@ -11,6 +11,10 @@ sys.path.append(PATH_TO_ROOT)
 from src.utils import utils, load_data
 from src.models.LogisticRegression import LogisticRegression
 
+"""
+This file should be modified to use cross validated accuracy, but results are good
+"""
+
 def train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs):
     # Training loop
     n_total_steps = len(trainloader)
