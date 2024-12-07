@@ -1,18 +1,56 @@
-In this study, we did a gridsearch of a Convolutional Neural Network and compared the classification accuracy with logistic regression on the MNIST dataset. The primary focus was on implementing and comparing the performance of different Convolutional Neural Networks (CNN) with various layers, nodes and activation functions. These was afterwards compared with Logistic Regression (LR) for 5 different learningrates, batchsizes and epochs. To ensure the robustness and reliability of our results, we utilized data preprocessing and optimization techniques, including train-test splitting, feature scaling and bootstrapping. 
+The primary focus in this study was on implementing and comparing the performance of different CNNs with various layers, nodes and activation functions on the MNIST dataset. These was afterwards compared with Logistic Regression (LR) for 5 different learningrates, batchsizes and epochs. To ensure the robustness and reliability of our results, we utilized data preprocessing and optimization techniques, including train-test splitting, feature scaling and bootstrapping. 
 
 \subsection{Data Generation and Preprocessing}
 
 \subsubsection{Train-Test Split}
 
-The train-test split is a fundamental step in machine learning workflows to ensure that models are evaluated on data that they have not seen during training. In this project, we load the MNIST dataset and divide it into two subsets: a training set and a test set. The training set is used during the optimization process, where the model parameters are iteratively updated to minimize the loss function. On the other hand, the test set remains completely untouched until the final evaluation phase. This separation allows us to assess the model’s ability to generalize to new, unseen data. By ensuring that model selection and hyperparameter tuning are performed only on training data, and final performance checks occur on the test data, we gain a more realistic measure of the model’s predictive power and robustness.
+ We loaded the MNIST dataset and divided it into two subsets: a training set and a test set. The training set was used during the optimization process, where the model parameters were iteratively updated to minimize the loss function. On the other hand, the test set remained completely untouched until the final evaluation phase. This separation allowed us to assess the model’s ability to generalize to new, unseen data. By ensuring that model selection and hyperparameter tuning were performed only on training data, and final performance checks occur on the test data, we gained a more realistic measure of the model’s predictive power and robustness.
 
 \subsubsection{Feature Scaling}
 
-Feature scaling is an essential preprocessing step that helps stabilize and accelerate the model training process. In this work, we apply a normalization transformation to the MNIST images, scaling their pixel intensity values so that they have a mean of 0.5 and a standard deviation of 0.5. This normalization ensures that the input features (pixels) lie within a more uniform and manageable range. As a result, the optimization routines, such as stochastic gradient descent or Adam, can converge more quickly and reliably, reducing the chances of getting stuck in poor local minima or suffering from numerical instabilities. In essence, feature scaling fosters a more stable and efficient learning environment for the model.
+We applied a normalization transformation to the MNIST images, scaling their pixel intensity values so that they had a mean of 0.5 and a standard deviation of 0.5. This normalization ensured that the input features (pixels) lied within a more uniform and manageable range. As a result, the optimization routines, such as stochastic gradient descent or Adam, could converge more quickly and reliably, reducing the chances of getting stuck in poor local minima or suffering from numerical instabilities. In essence, feature scaling fosters a more stable and efficient learning environment for the model.
 
 \subsection{Classification Techniques}
 
 The following classification methods were implemented:
+
+\subsubsection{Convolutional Neural Network}
+
+Convolutional Neural Networks are a type of deep learning model specifically designed for processing structured grid data, such as images. CNNs exploit spatial hierarchies in data by applying convolutional operations to extract features. These features are then used to perform classification tasks.
+
+A key component of a CNN is the convolution operation. For a 2D input, the convolution is defined as:
+
+\begin{equation}
+    (f * g)(x, y) = \sum_{m=-\infty}^{\infty} \sum_{n=-\infty}^{\infty} f(m, n) \cdot g(x - m, y - n)
+\end{equation}
+
+Here, \(f(m, n)\) represents the input image, and \(g(x - m, y - n)\) is the filter or kernel. The kernel slides over the image to compute feature maps.
+
+To control the size of the output feature maps, CNNs often use padding and strides. The size of the output feature map, \(O\), for an input of size \(I\), a filter size \(F\), stride \(S\), and padding \(P\), is calculated as:
+
+\begin{equation}
+    O = \frac{I - F + 2P}{S} + 1
+\end{equation}
+
+Pooling layers, such as max-pooling, are used for dimensionality reduction while preserving essential features. For example, max-pooling selects the maximum value within a specified window, reducing the spatial dimensions of the feature map.
+
+The final layers of a CNN are typically fully connected (dense) layers, which map the extracted features to class probabilities using a softmax function:
+
+\begin{equation}
+    p(y = c \mid \boldsymbol{x}) = \frac{\exp(z_c)}{\sum_{k=1}^C \exp(z_k)}
+\end{equation}
+
+Here, \(z_c\) represents the output score for class \(c\), and \(C\) is the total number of classes.
+
+CNNs are trained using backpropagation, where the loss function, such as cross-entropy, guides the optimization of weights:
+
+\begin{equation}
+    L = -\sum_{i=1}^n \sum_{c=1}^C y_{i,c} \log \hat{y}_{i,c}
+\end{equation}
+
+In this equation, \(y_{i,c}\) is the true label, and \(\hat{y}_{i,c}\) is the predicted probability for class \(c\).
+
+CNNs have demonstrated exceptional performance in image classification tasks by automatically learning hierarchical features from raw input data \cite{raschka2022machine}.
 
 
 \subsubsection{Logistic Regression}
@@ -62,13 +100,14 @@ Parameters are estimated by minimizing $C(\boldsymbol{\beta})$ using iterative m
 
 \subsection{Implementation}
 
-Gradient descent and Stochastic gradient descent were implemented with our own code. The neural network was implemented firstly with our own code and after with the \texttt{PyTorch} library \cite{Paszke2019} for comparison. We used Mean squared error as the loss function and Adam as the Optimizer for the regression task. For classification, we used the Adam optimizer in all cases, and binary cross entropy as the loss function when sigmoid was the last layer's activation function. When Softmax was the last layer's activation function we used cross entropy as loss function. Lastly, the logistic regression was implemented with our own code before we created the same model with \texttt{scikit-learn} library \cite{scikit-learn}. Based on initial experiments, we selected a learning rate range from \( 10^{-5} \) to \( 10^0 \) and epoch counts between 900 and 1000 as a standard for all models, as these parameters yielded the most favorable balance between model accuracy and computational efficiency. The following steps summarize the implementation process:
+The CNNs were implemented using the \texttt{PyTorch} library \cite{Paszke2019} with inspiration from the tutorial "Training a Classifier" \cite{pytorch_cifar10_tutorial}. We mainly changed the code to include gridsearch and to include binary cross-entropy as loss function and adam as optimizer. The gridsearch was done over various layers, nodes and activation functions.( \jonas{Vær vennlig å inkluder spesifik range på layers/noder og spesifikke aktiverings funksjoner}). The logistic regressioin was also implemented using the \texttt{PyTorch} library but with help from Antropic's Claude 3.5 Sonnet ai model \cite{anthropic_claude_3_5_sonnet}. Based in initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in range from 16 to 256 and epochs in range from 5 to 25. The following steps summarize the implementation process:
 
 \begin{enumerate}
-    \item \textbf{Data Generation:} Generate synthetic second-order polynomial data with added Gaussian noise. Load real data and extract \texttt{"radius\_mean"} and \texttt{"texture\_mean"} as features. 
-    \item \textbf{Data Splitting \& feature scaling:} Split the data into training and testing sets using \texttt{train\_test\_split}. Apply \texttt{StandardScaler} to standardize the features.
-    \item \textbf{Model Training:} Train FFNN and Logistic Regression on the training data.
-    \item \textbf{Parameter Tuning:} Use a range of epochs and learning rates to find optimal MSE, R2, and Accuracy scores. Test various $\lambda$ values for the Logistic Regression model.
+    \item \textbf{Data Loading and Splitting:} Load the MNIST data set and split it into train and test sets using \texttt{torchvision.datasets}. 
+    \item \textbf{Feature scaling:} Apply \texttt{transforms.Compose([transforms.ToTensor(),
+    transforms.Normalize((0.5), (0.5))])}, to normalize the pixel intensity values to mean 0.5 and standard deviation 0.5. 
+    \item \textbf{Model Training:} Train CNNs and Logistic Regression on the training data.
+    \item \textbf{Parameter Tuning:} Use a range of learning rates, batchsizes and epochs to find optimal Accuracy scores. 
     \item \textbf{Testing:} Assess the final model performance on the testing set.
 \end{enumerate}
 
@@ -85,9 +124,9 @@ where the number of correctly guessed targets $t_i$ is divided by the total numb
 
 With inspiration from FYS-STK4155 project 1 \cite{bore2023fysstk4155project1} we summarize our use of large language models: 
 We have been encouraged in the group sessions to use ChatGPT \cite{openai2023chatgpt} in writing this report. We have done so by first writing the whole paragraph, then sending it to ChatGPT with the prompt "Can you rewrite this with better and more concise language? Keep the references as they are and only keep the most important equations to explain the methods:". We have then read through the suggestion closely to make sure the values and content are the same as before. We hope that this makes it easier for the reader to follow our discussion, especially when we discuss the figures. Screenshots from conversations with ChatGPT are uploaded in a folder on our GitHub. We
-have also used Github Copilot as an integrated tool \cite{github_copilot}.
+have also used Github Copilot as an integrated tool \cite{github_copilot}. Antropic's Cloude 3.5 Sonnet was used to create the logistic regression code \cite{anthropic_claude_3_5_sonnet}. 
 
 
 \subsection{Other Tools}
 
-We used the software Overleaf to write this report. To create the dataset along with doing basic mathematical operations we used the NumPy package \cite{harris2020numpy}. Plotting our results was done with the Matplotlib package \cite{hunter-2007matplotlib}. We implemented the methods with inspiration from the lecture notes in FYS-STK4155 \cite{Hjorth-Jensen_MachineLearning_2023}. The code for the project can be found at: \url{https://github.com/irisbore/FYS-STK4155_project3.git}.
+We used the software Overleaf to write this report. To create the dataset along with doing basic mathematical operations we used the NumPy package \cite{harris2020numpy}. Plotting our results was done with the Matplotlib package \cite{hunter-2007matplotlib}. The code for the project can be found at: \url{https://github.com/irisbore/FYS-STK4155_project3.git}.
