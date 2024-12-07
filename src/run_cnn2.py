@@ -20,7 +20,7 @@ layer_configs = (
         'out_channels': 32,
         'kernel_size': 5,
         'activation': "ReLU",
-        'pooling': 2
+        'pooling': 2 # kernel size
     },
     {
         'type':  "conv",
@@ -28,11 +28,11 @@ layer_configs = (
         'out_channels': 64,
         'kernel_size': 5,
         'activation': "ReLU",
-        'pooling': 2
+        'pooling': 2 # kernel size
     },
     {
         'type':  "linear",
-        'in_features': 64*4*4, #256
+        'in_features': 64*4*4, #1024
         'out_features': 120,
         'activation': "ReLU",
     },
@@ -88,6 +88,7 @@ if __name__ == "__main__":
     #test
     correct = 0
     total = 0
+
     with torch.no_grad():
         for data in testloader:
             inputs, labels = data
@@ -96,7 +97,7 @@ if __name__ == "__main__":
             _, predicted = torch.max(outputs.data, 1)
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
-
-            
+    print(net.get_flattened_size())
     print("Finished Training")
-    
+    print(f'Accuracy of the network on the 10000 test images: {100 * correct // total} %')
+

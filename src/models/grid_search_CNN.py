@@ -23,8 +23,9 @@ class ConvNet(nn.Module):
         """
         super(ConvNet, self).__init__()
         self.layers = nn.ModuleList()
+        self.layer_configs = layer_configs
 
-        for config in layer_configs:
+        for config in self.layer_configs:
             
             #hidden layer
             if config['type'] == "linear":
@@ -67,3 +68,30 @@ class ConvNet(nn.Module):
         for layer in self.layers:
             x = layer(x)
         return(x)
+    
+    def get_flattened_size(self):
+        #calculate size after flattening after all convolutional layers
+        #conv: default stride = 1, padding = 0
+        #output: (input-kernel+padding x 2) / stride + 1
+        #pooling: default stride = 2
+        #output: (input-kernel)/stride + 1
+        #flattening: output is channels x height x width 
+        
+        size = 28 #28 x 28 that is at the start
+        channels = 1 #1 at the start; just records the last output channels
+        for config in self.layer_configs:
+            if config['type'] == "conv":
+                channels = config['out_channels']
+                kernel = config['kernel_size']
+                padding = config.get('padding', 0) #if we add padding
+                stride = config.get('stride', 1)
+                size = int((size - kernel + padding*2)/stride + 1) # round it down in case of decimals
+            
+            pooling = config.get('pooling', None)
+            if pooling:
+                stride = 2
+                kernel = pooling
+                size = int((size - kernel)/stride + 1) # round it down in case of decimals
+        
+        #flatten
+        return int(size ** 2 * channels)

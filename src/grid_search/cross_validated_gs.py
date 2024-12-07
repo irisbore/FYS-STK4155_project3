@@ -1,21 +1,19 @@
+import sys
+
 import numpy as np
 from sklearn.model_selection import StratifiedKFold
-
-import sys
 import torch
 import torch.nn as nn
 import torch.optim as optim
 import torchvision as tv
 from torch.utils.data import Subset, DataLoader
 import git 
-import utils.load_data as ld
-
-from src.models.grid_search_CNN import ConvNet
-from src.utils import utils
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
+from src.models.grid_search_CNN import ConvNet
+from src.utils import utils
 
 if __name__ == "__main__":
     config_path = utils.get_config_path(
@@ -27,36 +25,36 @@ if __name__ == "__main__":
     learning_rate = config["learning_rate"]
     epochs = config["epochs"]
     print_interval = config["print_interval"]
-    kfold = StratifiedKFold(n_splits=config["n_splits"])
 
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
         ])
     trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=True, transform=transform)
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False)
+    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
 
+    cv_accuracy = {}
     for kernel_size in config["kernel_size"]:
         for filter_numbers in config["filter_numbers"]:
             layer_configs = (
                 {
                     'type':  "conv",
                     'in_channels': 1,
-                    'out_channels': 6,
-                    'kernel_size': 5,
+                    'out_channels': filter_numbers[0],
+                    'kernel_size': kernel_size,
                     'activation': "ReLU",
                     'pooling': 2
                 },
                 {
                     'type':  "conv",
-                    'in_channels': 6,
-                    'out_channels': 16,
-                    'kernel_size': 5,
+                    'in_channels': filter_numbers[0],
+                    'out_channels': filter_numbers[1],
+                    'kernel_size': kernel_size,
                     'activation': "ReLU",
                     'pooling': 2
                 },
                 {
                     'type':  "linear",
-                    'in_features': 16*4*4, #256
+                    'in_features': 0,
                     'out_features': 120,
                     'activation': "ReLU",
                 },
@@ -72,16 +70,18 @@ if __name__ == "__main__":
                     'out_features': 10,
                 }
             )
-            # Train model
+            dummynet = ConvNet(layer_configs)
+            layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+            # Initialize cross validation
+            kfold = StratifiedKFold(n_splits=config["n_splits"]).split(trainset, trainset.targets)
             val_accuracies = []
             for k, (train_idx, val_idx) in enumerate(kfold):
-                train = Subset(trainset, train_idx)
-                val = Subset(trainset, val_idx)
-                trainloader = DataLoader(train, batch_size, shuffle=True)
-                valloader = DataLoader(val, batch_size, shuffle=True)
+                trainloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(train_idx))
+                valloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(val_idx))
+
                 model = ConvNet(layer_configs)
                 criterion, optimizer = utils.set_loss_optim(model, learning_rate)
-                for epoch in range(epochs):
+                for epoch in tqdm(range(epochs)):
                     running_loss = 0.0
                     for i, data in enumerate(trainloader):
                         inputs, labels = data #list of [inputs, labels]
@@ -99,7 +99,6 @@ if __name__ == "__main__":
                             print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
                             running_loss = 0.0
 
-
                 # Test on whole data set
                 correct = 0
                 total = 0
@@ -115,4 +114,6 @@ if __name__ == "__main__":
                         correct += (predicted == labels).sum().item()
 
                 val_accuracy = 100 * correct // total
-                val_accuracies.append()
+                val_accuracies.append(val_accuracy)
+            cv_accuracy[f'k{kernel_size}_f{filter_numbers}']= np.mean(val_accuracies)
+            print(f'kernel size: {kernel_size}, filter number: {filter_numbers}, cv accuracy: {np.mean(val_accuracies)}, cv std: {np.std(val_accuracies)}')
