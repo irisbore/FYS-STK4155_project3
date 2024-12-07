@@ -1,8 +1,12 @@
 batch_size: 64
 n_splits: 5
-epochs: 3
+epochs: 1
 print_interval: 2000
 seed: 1
 learning_rate: 0.001
-filter_numbers: [[8, 16], [32, 64], [124, 256]]
+filter_size: [[8, 16], [32, 64], [124, 256]]
 kernel_size: [3, 5, 7]
+save_results: False
+save_path: 'results/cnn_grid_search'
+
+

@@ -1,6 +1,8 @@
 import sys
-
+from tqdm import tqdm
 import numpy as np
+import seaborn as sns
+import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 import torch
 import torch.nn as nn
@@ -8,6 +10,7 @@ import torch.optim as optim
 import torchvision as tv
 from torch.utils.data import Subset, DataLoader
 import git 
+import yaml
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -29,25 +32,31 @@ if __name__ == "__main__":
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
         ])
-    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=True, transform=transform)
+    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
     testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
 
-    cv_accuracy = {}
+    cv_accuracy = {
+    'Kernel Size': [],
+    'Filter Size': [],
+    'CV Accuracy': [],
+    'CV Accuracy Std': []
+    }
+
     for kernel_size in config["kernel_size"]:
-        for filter_numbers in config["filter_numbers"]:
+        for filter_size in config["filter_size"]:
             layer_configs = (
                 {
                     'type':  "conv",
                     'in_channels': 1,
-                    'out_channels': filter_numbers[0],
+                    'out_channels': filter_size[0],
                     'kernel_size': kernel_size,
                     'activation': "ReLU",
                     'pooling': 2
                 },
                 {
                     'type':  "conv",
-                    'in_channels': filter_numbers[0],
-                    'out_channels': filter_numbers[1],
+                    'in_channels': filter_size[0],
+                    'out_channels': filter_size[1],
                     'kernel_size': kernel_size,
                     'activation': "ReLU",
                     'pooling': 2
@@ -72,6 +81,7 @@ if __name__ == "__main__":
             )
             dummynet = ConvNet(layer_configs)
             layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+
             # Initialize cross validation
             kfold = StratifiedKFold(n_splits=config["n_splits"]).split(trainset, trainset.targets)
             val_accuracies = []
@@ -79,6 +89,7 @@ if __name__ == "__main__":
                 trainloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(train_idx))
                 valloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(val_idx))
 
+                #Initialize model with grid search values
                 model = ConvNet(layer_configs)
                 criterion, optimizer = utils.set_loss_optim(model, learning_rate)
                 for epoch in tqdm(range(epochs)):
@@ -115,5 +126,16 @@ if __name__ == "__main__":
 
                 val_accuracy = 100 * correct // total
                 val_accuracies.append(val_accuracy)
-            cv_accuracy[f'k{kernel_size}_f{filter_numbers}']= np.mean(val_accuracies)
-            print(f'kernel size: {kernel_size}, filter number: {filter_numbers}, cv accuracy: {np.mean(val_accuracies)}, cv std: {np.std(val_accuracies)}')
+            cv_accuracy['Kernel Size'].append(kernel_size)
+            cv_accuracy['Filter Size'].append(filter_size)
+            mean_accuracy = float(np.mean(val_accuracies))
+            std_accuracy = float(np.std(val_accuracies))
+            print(mean_accuracy, std_accuracy)
+            print(type(mean_accuracy))
+            cv_accuracy['CV Accuracy'].append(mean_accuracy)
+            cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+    
+    if config["save_results"] == True:
+        with open(PATH_TO_ROOT+'/results/cnn_grid_search/results', 'w') as file: 
+            file.write(yaml.dump(cv_accuracy))
+                   

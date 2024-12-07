@@ -8,6 +8,14 @@ import numpy as np
 import torch.nn as nn
 import torch.optim as optim
 import torch
+import seaborn as sns
+import matplotlib.pyplot as plt
+import pandas as pd
+
+def set_loss_optim(model, lr: float):
+    criterion = nn.CrossEntropyLoss()
+    optimizer  = torch.optim.Adam(model.parameters(), lr=lr)
+    return criterion, optimizer
 
 def get_config(path) -> Dict:
     """
@@ -36,6 +44,19 @@ def create_arg_parser() -> argparse.ArgumentParser:
         help='Path to the config file')
     return parser
 
+def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: str=None, annot = True):
+    config = get_config(config_path)
+    if title is None:
+        lr = config["learning_rate"]
+        title = rf"CV Accuracy for Number of Kernels and Filters, with $\eta = {lr} $"
+    sns.heatmap(df, annot=annot)
+    plt.title(title)
+    plt.tight_layout()
+    if filename:
+        plt.savefig(config["save_path"]+'/'+filename)
+    else:
+        plt.show()
+
 
 def get_config_path(default_path=None) -> str:
     """
@@ -53,7 +74,3 @@ def get_config_path(default_path=None) -> str:
         print('Using default config')
     return config_path
 
-def set_loss_optim(model, lr: float):
-    criterion = nn.CrossEntropyLoss()
-    optimizer  = torch.optim.Adam(model.parameters(), lr=lr)
-    return criterion, optimizer
