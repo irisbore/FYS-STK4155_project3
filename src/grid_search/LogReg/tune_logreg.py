@@ -12,7 +12,7 @@ from src.utils import utils, load_data
 from src.models.LogisticRegression import LogisticRegression
 
 """
-This file should be modified to use cross validated accuracy, but results are good
+This file should be modified to use cross validated accuracy.
 """
 
 def train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs):
