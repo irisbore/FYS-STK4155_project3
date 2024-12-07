@@ -17,7 +17,6 @@ if __name__== "__main__":
     # Convert list values in the "Filter Size" column to tuples
     df_results["Filter Size"] = df_results["Filter Size"].apply(lambda x: tuple(x) if isinstance(x, list) else x)
     
-    
     # Pivot the DataFrame
     heatmap_data = df_results.pivot(index='Kernel Size', columns='Filter Size', values='CV Accuracy')
     
