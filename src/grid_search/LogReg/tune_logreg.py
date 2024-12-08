@@ -12,7 +12,7 @@ from src.utils import utils, load_data
 from src.models.LogisticRegression import LogisticRegression
 
 """
-This file should be modified to use cross validated accuracy.
+This file should be modified to use cross validated accuracy. Data can be loaded as in cnn/cross_val_gs.py, I think we can drop the load_data.py file
 """
 
 def train_and_evaluate(model, trainloader, testloader, criterion, optimizer, n_epochs):

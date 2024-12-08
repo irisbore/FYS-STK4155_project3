@@ -12,10 +12,6 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
 
-def set_loss_optim(model, lr: float):
-    criterion = nn.CrossEntropyLoss()
-    optimizer  = torch.optim.Adam(model.parameters(), lr=lr)
-    return criterion, optimizer
 
 def get_config(path) -> Dict:
     """
@@ -44,20 +40,6 @@ def create_arg_parser() -> argparse.ArgumentParser:
         help='Path to the config file')
     return parser
 
-def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: str=None, annot = True):
-    config = get_config(config_path)
-    if title is None:
-        lr = config["learning_rate"]
-        title = rf"CV Accuracy for Number of Kernels and Filters, with $\eta = {lr} $"
-    sns.heatmap(df, annot=annot)
-    plt.title(title)
-    plt.tight_layout()
-    if filename:
-        plt.savefig(config["save_path"]+'/'+filename)
-    else:
-        plt.show()
-
-
 def get_config_path(default_path=None) -> str:
     """
     Fetches config path from either command line or default path.
@@ -73,4 +55,22 @@ def get_config_path(default_path=None) -> str:
         config_path = default_path
         print('Using default config')
     return config_path
+
+def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: str=None, annot = True):
+    config = get_config(config_path)
+    if config['grid_search'] == 'kernel+filter':
+        lr = config["learning_rate"]
+        title = rf"CV Accuracy for Number of Kernels and Filters, with $\eta = {lr} $"
+
+    if config['grid_search'] == 'epochs+lr':
+        lr = config["learning_rate"]
+        title = rf"CV Accuracy for Different Values of Epochs and Learning Rates"
+    sns.heatmap(df, annot=annot)
+    plt.title(title)
+    plt.tight_layout()
+    if filename:
+        plt.savefig(config["save_path"]+'/'+filename)
+    else:
+        plt.show()
+
 

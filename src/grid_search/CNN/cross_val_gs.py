@@ -18,80 +18,24 @@ sys.path.append(PATH_TO_ROOT)
 from src.models.grid_search_CNN import ConvNet
 from src.utils import utils
 
-if __name__ == "__main__":
-    config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/grid_search/grid_search.yaml"
-    )
-    config = utils.get_config(config_path)
-    torch.manual_seed(config["seed"])
-    batch_size = config["batch_size"]
-    learning_rate = config["learning_rate"]
-    epochs = config["epochs"]
-    print_interval = config["print_interval"]
+def set_loss_optim(model, lr: float):
+    criterion = nn.CrossEntropyLoss()
+    optimizer  = torch.optim.Adam(model.parameters(), lr=lr)
+    return criterion, optimizer
 
-    transform = tv.transforms.Compose([
-        tv.transforms.ToTensor()
-        ])
-    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
-
-    cv_accuracy = {
-    'Kernel Size': [],
-    'Filter Size': [],
-    'CV Accuracy': [],
-    'CV Accuracy Std': []
-    }
-
-    for kernel_size in config["kernel_size"]:
-        for filter_size in config["filter_size"]:
-            layer_configs = (
-                {
-                    'type':  "conv",
-                    'in_channels': 1,
-                    'out_channels': filter_size[0],
-                    'kernel_size': kernel_size,
-                    'activation': "ReLU",
-                    'pooling': 2
-                },
-                {
-                    'type':  "conv",
-                    'in_channels': filter_size[0],
-                    'out_channels': filter_size[1],
-                    'kernel_size': kernel_size,
-                    'activation': "ReLU",
-                    'pooling': 2
-                },
-                {
-                    'type':  "linear",
-                    'in_features': 0,
-                    'out_features': 120,
-                    'activation': "ReLU",
-                },
-                {
-                    'type':  "linear",
-                    'in_features': 120,
-                    'out_features': 84,
-                    'activation': "ReLU",
-                },
-                {
-                    'type':  "linear",
-                    'in_features': 84,
-                    'out_features': 10,
-                }
-            )
-            dummynet = ConvNet(layer_configs)
-            layer_configs[2]['in_features'] = dummynet.get_flattened_size()
-
+def run_cnn_cv(trainset: torch.Tensor, layer_configs: dict, epochs: int, learning_rate: float, cv_accuracy:dict) -> dict:
             # Initialize cross validation
             kfold = StratifiedKFold(n_splits=config["n_splits"]).split(trainset, trainset.targets)
             val_accuracies = []
             for k, (train_idx, val_idx) in enumerate(kfold):
+                torch.manual_seed(k)
+
                 trainloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(train_idx))
                 valloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(val_idx))
 
                 #Initialize model with grid search values
                 model = ConvNet(layer_configs)
-                criterion, optimizer = utils.set_loss_optim(model, learning_rate)
+                criterion, optimizer = set_loss_optim(model, learning_rate)
                 for epoch in tqdm(range(epochs)):
                     running_loss = 0.0
                     for i, data in enumerate(trainloader):
@@ -126,16 +70,140 @@ if __name__ == "__main__":
 
                 val_accuracy = 100 * correct // total
                 val_accuracies.append(val_accuracy)
-            cv_accuracy['Kernel Size'].append(kernel_size)
-            cv_accuracy['Filter Size'].append(filter_size)
-            mean_accuracy = float(np.mean(val_accuracies))
-            std_accuracy = float(np.std(val_accuracies))
-            print(mean_accuracy, std_accuracy)
-            print(type(mean_accuracy))
-            cv_accuracy['CV Accuracy'].append(mean_accuracy)
-            cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+            return val_accuracies
+
+if __name__ == "__main__":
+    config_path = utils.get_config_path(
+        default_path=PATH_TO_ROOT + "/src/grid_search/CNN/grid_search.yaml"
+    )
+    config = utils.get_config(config_path)
+    torch.manual_seed(config["seed"])
+    batch_size = config["batch_size"]
+    print_interval = config["print_interval"]
+
+    transform = tv.transforms.Compose([
+        tv.transforms.ToTensor()
+        ])
+    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
+    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
+
+    if config["grid_search"] == "kernel+filter":
+        cv_accuracy = {
+        'Kernel Size': [],
+        'Filter Size': [],
+        'CV Accuracy': [],
+        'CV Accuracy Std': []
+        }
+        learning_rate = config["learning_rate"]
+        epochs = config["epochs"]
+        for kernel_size in config["kernel_size_grid"]:
+            for filter_size in config["filter_size_grid"]:
+                layer_configs = (
+                    {
+                        'type':  "conv",
+                        'in_channels': 1,
+                        'out_channels': filter_size[0],
+                        'kernel_size': kernel_size,
+                        'activation': "ReLU",
+                        'pooling': 2
+                    },
+                    {
+                        'type':  "conv",
+                        'in_channels': filter_size[0],
+                        'out_channels': filter_size[1],
+                        'kernel_size': kernel_size,
+                        'activation': "ReLU",
+                        'pooling': 2
+                    },
+                    {
+                        'type':  "linear",
+                        'in_features': 0,
+                        'out_features': 120,
+                        'activation': "ReLU",
+                    },
+                    {
+                        'type':  "linear",
+                        'in_features': 120,
+                        'out_features': 84,
+                        'activation': "ReLU",
+                    },
+                    {
+                        'type':  "linear",
+                        'in_features': 84,
+                        'out_features': 10,
+                    }
+                )
+                dummynet = ConvNet(layer_configs)
+                layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+                val_accuracies = run_cnn_cv(trainset, layer_configs, epochs, learning_rate, cv_accuracy)
+                cv_accuracy['Kernel Size'].append(kernel_size)
+                cv_accuracy['Filter Size'].append(filter_size)
+                mean_accuracy = float(np.mean(val_accuracies))
+                std_accuracy = float(np.std(val_accuracies))
+                cv_accuracy['CV Accuracy'].append(mean_accuracy)
+                cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+                
+
+    if config['grid_search'] == 'epochs+lr':
+        cv_accuracy = {
+            'Epochs': [],
+            'Learning Rate': [],
+            'CV Accuracy': [],
+            'CV Accuracy Std': []
+            }
+        filter_size = config["filter_size"]
+        kernel_size = config["epochs"]
+        for epochs in config["epochs_grid"]:
+            print(f"On epoch number {epochs}")
+            for learning_rate in config["learning_rate_grid"]:
+                print(f"With learning rate {learning_rate}")
+                layer_configs = (
+                    {
+                        'type':  "conv",
+                        'in_channels': 1,
+                        'out_channels': filter_size[0],
+                        'kernel_size': kernel_size,
+                        'activation': "ReLU",
+                        'pooling': 2
+                    },
+                    {
+                        'type':  "conv",
+                        'in_channels': filter_size[0],
+                        'out_channels': filter_size[1],
+                        'kernel_size': kernel_size,
+                        'activation': "ReLU",
+                        'pooling': 2
+                    },
+                    {
+                        'type':  "linear",
+                        'in_features': 0,
+                        'out_features': 120,
+                        'activation': "ReLU",
+                    },
+                    {
+                        'type':  "linear",
+                        'in_features': 120,
+                        'out_features': 84,
+                        'activation': "ReLU",
+                    },
+                    {
+                        'type':  "linear",
+                        'in_features': 84,
+                        'out_features': 10,
+                    }
+                )
+                dummynet = ConvNet(layer_configs)
+                layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+                val_accuracies = run_cnn_cv(trainset, layer_configs, epochs, learning_rate, cv_accuracy)
+                cv_accuracy['Epochs'].append(epochs)
+                cv_accuracy['Learning Rate'].append(learning_rate)
+                mean_accuracy = float(np.mean(val_accuracies))
+                std_accuracy = float(np.std(val_accuracies))
+                cv_accuracy['CV Accuracy'].append(mean_accuracy)
+                cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+         
     
-    if config["save_results"] == True:
-        with open(PATH_TO_ROOT+'/results/cnn_grid_search/results', 'w') as file: 
+    if config['save_results'] == True:
+        with open(PATH_TO_ROOT+f'/results/cnn_grid_search/results_'+config['grid_search']+'.yaml', 'w') as file: 
             file.write(yaml.dump(cv_accuracy))
                    

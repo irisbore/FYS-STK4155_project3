@@ -1,12 +1,17 @@
+grid_search: epochs+lr #ONLY CHANGE NEEDED TO SWITCH BETWEEN SEARCHS: CHOOSE BETWEEN kernel+filter, epochs+lr, dropoutlayer  
+save_results: True
 batch_size: 64
 n_splits: 5
-epochs: 1
+epochs: 1 #for grid search with fixed number of epochs
+learning_rate: 0.001 #for grid search with fixed learning rate
+kernel_size: 6 # for grid search with fixed kernel size
+filter_size: [124, 256] #for grid search with fixed filter size
 print_interval: 2000
 seed: 1
-learning_rate: 0.001
-filter_size: [[8, 16], [32, 64], [124, 256]]
-kernel_size: [3, 5, 7]
-save_results: False
-save_path: 'results/cnn_grid_search'
+epochs_grid: [2,3,5]
+learning_rate_grid: [0.1, 0.01, 0.001, 0.0001]
+filter_size_grid: [[8, 16]] #, [32, 64], [124, 256]]
+kernel_size_grid: [3] #5, 7]
+save_path: results/cnn_grid_search
 
 
