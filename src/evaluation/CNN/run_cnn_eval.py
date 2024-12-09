@@ -12,7 +12,7 @@ sys.path.append(PATH_TO_ROOT)
 
 from models.CNN import ConvNet
 
-def bootstrap(dataset: torch.Tensor, config):
+def bootstrap(dataset: torch.Tensor, config: dict):
         for i in tqdm(range(config["n_bootstraps"])):
                 # Generating random indices for sampling from dataframe
                 batch_size = config["batch_size"]
@@ -40,4 +40,12 @@ if __name__=="__main__":
         ])
         trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
         testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
-        full_data = torch.utils.data.ConcatDataset([trainset, testset])
+
+        # Model uncertainty
+        bootstrap(trainset, config)
+
+        # Train final model
+        #model_pipeline()
+
+        # Model evaluation
+        #score(testset)
