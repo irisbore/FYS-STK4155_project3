@@ -55,7 +55,7 @@ def plot_parameter_study(param_values, accuracies, param_name):
 
 if __name__ == "__main__":
     config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/run_LogReg.yaml"
+        default_path=PATH_TO_ROOT + "/src/run_logreg_gs.yaml"
     )
 
     config = utils.get_config(config_path)

@@ -21,7 +21,7 @@ from src.utils.cross_validation import run_cv
 
 if __name__ == "__main__":
     config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn.yaml"
+        default_path=PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs.yaml"
     )
     config = utils.get_config(config_path)
     torch.manual_seed(config["seed"])
