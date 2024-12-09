@@ -1,82 +1,97 @@
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import numpy as np
 import torch.nn.functional as F
 import torch.optim as optim
 
-torch.manual_seed(2002) 
-    
+class ConvNet(nn.Module):
+    def __init__(self, layer_configs):
+        """creates a convolutional neural network class
 
-class Net(nn.Module):
-    def __init__(self):
-        super().__init__()
-        self.conv1 = nn.Conv2d(1, 32, 5)  # 1 input channel (grayscale), 6 output, kernel size 5x5
-        self.pool = nn.MaxPool2d(2, 2)
-        self.conv2 = nn.Conv2d(32, 64, 5)
-        self.fc1 = nn.Linear(64 * 4 * 4, 120)
-        self.fc2 = nn.Linear(120, 84)
-        self.fc3 = nn.Linear(84, 10)
+        Args:
+            layer_configs (list of dict): each dict is the config of a layer
+                'type' = either "conv", "linear"
+                #linear
+                    'in_features' = input dimensions
+                    'out_features' = output dimensions
+                #conv
+                    'in_channels' = input dimensions for conv
+                    'out_channels' = output dimensions for conv
+                    'kernel_size' = kernel size for conv
+                'activation' = either "sigmoid", "ReLU" or undefined/None
+                'pooling' = undefined if none, kernel_size: int if you want pooling
+            (including activation function and pooling)
+        """
+        super(ConvNet, self).__init__()
+        self.layers = nn.ModuleList()
+        self.layer_configs = layer_configs
+
+        for config in self.layer_configs:
+            
+            #hidden layer
+            if config['type'] == "linear":
+                if not any(isinstance(layer, nn.Flatten) for layer in self.layers): # -> size = height x width x channels
+                    self.layers.append(nn.Flatten(start_dim=1)) #all execept batch
+                self.layers.append(nn.Linear(config['in_features'], config['out_features']))
+            elif config['type'] == "conv": #stride = 1, padding = 0 (default)
+                inc = config['in_channels']
+                outc = config['out_channels']
+                k_sz = config['kernel_size']
+                self.layers.append(nn.Conv2d(inc, outc, k_sz))
+            
+            #activation func
+            activation = config.get('activation', None)
+            if activation:
+                    act = self._get_activation(activation) #built in method from pytorch
+                    self.layers.append(act) #adds activation as the next "layer"
+
+            #pooling
+            pooling = config.get('pooling', None) #stride = 2
+            if pooling:
+                self.layers.append(nn.MaxPool2d(pooling))
+
+    def _get_activation(self, activation):
+        activation = activation.lower()
+        if activation == "relu":
+            return nn.ReLU()
+        elif activation == "leakyrelu":
+            return nn.LeakyReLU()
+        elif activation == "sigmoid":
+            return nn.Sigmoid()
+        elif activation == "tanh":
+            return nn.Tanh()
+        elif activation == "softmax":
+            return nn.Softmax(dim=1) 
+        else:
+            raise ValueError(f"Unsupported activation function: {activation}")
 
     def forward(self, x):
-        x = self.pool(F.relu(self.conv1(x)))
-        x = self.pool(F.relu(self.conv2(x)))
-        x = torch.flatten(x, 1)  # flatten all dimensions except batch
-        x = F.relu(self.fc1(x))
-        x = F.relu(self.fc2(x))
-        x = self.fc3(x)
-        return x
+        for layer in self.layers:
+            x = layer(x)
+        return(x)
     
-
-# class CNN(nn.Module):
-#     """
-#     A feedforward neural network model for binary classification
-
-#     Attributes:
-#         output (nn.Linear): Output layer, producing a single value (binary classification).
-#         layers (nn.ModuleList): List of hidden layers, each a fully connected layer.
-#         activation_func (nn.Module): Activation function applied to the hidden layers.
-    
-#     Args:
-#         input_size (int): The number of input features.
-#         node_size (int): The number of neurons in each hidden layer.
-#         num_hidden_layers (int): The number of hidden layers in the network.
-#         activation (str): The activation function to use in hidden layers. 
-#                           Options are 'relu', 'leaky_relu', 'sigmoid'. 
-    
-#     Raises:
-#         ValueError: If the provided activation function is not one of the recognized types ('relu', 'leaky_relu', 'sigmoid').
-
-#     Methods:
-#         forward(x):
-#             Passes input through the network, returning the predicted output.
-#     """
-#     def __init__(self, input_size, node_size, num_hidden_layers, activation):
-#         super(CNN, self).__init__()
-
-#         self.output = nn.Linear(node_size, 1) #output
-#         self.layers = nn.ModuleList()
-#         self.layers.append(nn.Linear(input_size, node_size))  #Input
-#         self.activation_func = None 
-
-#         #nn.Conv2d
-#         if activation == 'relu':
-#             self.activation_func = nn.ReLU()
-#         elif activation == 'leaky_relu':
-#             self.activation_func = nn.LeakyReLU()
-#         elif activation == 'sigmoid':
-#             self.activation_func = nn.Sigmoid()
-#         else:
-#             raise ValueError
-
-#         for _ in range(num_hidden_layers):
-#             self.layers.append(nn.Linear(node_size, node_size))
-
-#     def forward(self, x):
-#         for layer in self.layers:
-#             x = self.activation_func(layer(x))
-
-#         return torch.sigmoid(self.output(x))
-
-
+    def get_flattened_size(self):
+        #calculate size after flattening after all convolutional layers
+        #conv: default stride = 1, padding = 0
+        #output: (input-kernel+padding x 2) / stride + 1
+        #pooling: default stride = 2
+        #output: (input-kernel)/stride + 1
+        #flattening: output is channels x height x width 
         
+        size = 28 #28 x 28 that is at the start
+        channels = 1 #1 at the start; just records the last output channels
+        for config in self.layer_configs:
+            if config['type'] == "conv":
+                channels = config['out_channels']
+                kernel = config['kernel_size']
+                padding = config.get('padding', 0) #if we add padding
+                stride = config.get('stride', 1)
+                size = int((size - kernel + padding*2)/stride + 1) # round it down in case of decimals
+            
+            pooling = config.get('pooling', None)
+            if pooling:
+                stride = 2
+                kernel = pooling
+                size = int((size - kernel)/stride + 1) # round it down in case of decimals
+        
+        #flatten
+        return int(size ** 2 * channels)

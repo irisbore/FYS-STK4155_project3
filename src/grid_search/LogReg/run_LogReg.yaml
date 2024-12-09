@@ -1,5 +1,5 @@
 seed: 42
-
+model_type: logreg
 # Learning rate values to test
 learning_rates: [0.00001,0.0001,0.001, 0.01, 0.1]
 

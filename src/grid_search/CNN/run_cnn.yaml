@@ -1,10 +1,11 @@
-grid_search: epochs+lr #ONLY CHANGE NEEDED TO SWITCH BETWEEN SEARCHS: CHOOSE BETWEEN kernel+filter, epochs+lr, dropoutlayer  
-save_results: True
+grid_search: kernel+filter #ONLY CHANGE NEEDED TO SWITCH BETWEEN SEARCHS: CHOOSE BETWEEN kernel+filter, epochs+lr, dropoutlayer  
+save_results: False
+model_type: cnn
 batch_size: 64
 n_splits: 5
 epochs: 1 #for grid search with fixed number of epochs
 learning_rate: 0.001 #for grid search with fixed learning rate
-kernel_size: 6 # for grid search with fixed kernel size
+kernel_size: 5 # for grid search with fixed kernel size
 filter_size: [124, 256] #for grid search with fixed filter size
 print_interval: 2000
 seed: 1

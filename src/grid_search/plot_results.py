@@ -12,7 +12,7 @@ if __name__== "__main__":
     initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/grid_search.yaml"
     grid_search_initials = utils.get_config(initial_config_path)
 
-    # For first grid search
+    # For first grid search for CNN
     grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_kernel+filter.yaml')
     df_results = pd.DataFrame(grid_search_results)
     
@@ -26,7 +26,7 @@ if __name__== "__main__":
     filename="heatmap_grid_search_kf.png"
     utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename=None)
 
-    # For second grid search
+    # For second grid search for CNN
     grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_epochs+lr.yaml')
     df_results = pd.DataFrame(grid_search_results)
     

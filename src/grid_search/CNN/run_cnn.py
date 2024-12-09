@@ -15,71 +15,19 @@ import yaml
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
-from src.models.grid_search_CNN import ConvNet
+from src.models.CNN import ConvNet
 from src.utils import utils
-
-def set_loss_optim(model, lr: float):
-    criterion = nn.CrossEntropyLoss()
-    optimizer  = torch.optim.Adam(model.parameters(), lr=lr)
-    return criterion, optimizer
-
-def run_cnn_cv(trainset: torch.Tensor, layer_configs: dict, epochs: int, learning_rate: float, cv_accuracy:dict) -> dict:
-            # Initialize cross validation
-            kfold = StratifiedKFold(n_splits=config["n_splits"]).split(trainset, trainset.targets)
-            val_accuracies = []
-            for k, (train_idx, val_idx) in enumerate(kfold):
-                torch.manual_seed(k)
-
-                trainloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(train_idx))
-                valloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(val_idx))
-
-                #Initialize model with grid search values
-                model = ConvNet(layer_configs)
-                criterion, optimizer = set_loss_optim(model, learning_rate)
-                for epoch in tqdm(range(epochs)):
-                    running_loss = 0.0
-                    for i, data in enumerate(trainloader):
-                        inputs, labels = data #list of [inputs, labels]
-                        optimizer.zero_grad()
-
-                        #forward
-                        outputs = model(inputs)
-                        loss = criterion(outputs, labels)
-                        loss.backward()
-                        optimizer.step()
-
-                        # print stats
-                        running_loss += loss.item()
-                        if i % print_interval == print_interval-1: #print every interval
-                            print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-                            running_loss = 0.0
-
-                # Test on whole data set
-                correct = 0
-                total = 0
-                # since we're not training, we don't need to calculate the gradients for our outputs
-                with torch.no_grad():
-                    for data in valloader:
-                        images, labels = data
-                        # calculate outputs by running images through the network
-                        outputs = model(images)
-                        # the class with the highest energy is what we choose as prediction
-                        _, predicted = torch.max(outputs.data, 1)
-                        total += labels.size(0)
-                        correct += (predicted == labels).sum().item()
-
-                val_accuracy = 100 * correct // total
-                val_accuracies.append(val_accuracy)
-            return val_accuracies
+from src.utils.cross_validation import run_cv
 
 if __name__ == "__main__":
     config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/grid_search/CNN/grid_search.yaml"
+        default_path=PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn.yaml"
     )
     config = utils.get_config(config_path)
     torch.manual_seed(config["seed"])
     batch_size = config["batch_size"]
     print_interval = config["print_interval"]
+    model_type = config["model_type"]
 
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
@@ -135,7 +83,7 @@ if __name__ == "__main__":
                 )
                 dummynet = ConvNet(layer_configs)
                 layer_configs[2]['in_features'] = dummynet.get_flattened_size()
-                val_accuracies = run_cnn_cv(trainset, layer_configs, epochs, learning_rate, cv_accuracy)
+                val_accuracies = run_cv(trainset=trainset, config_path=config_path, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
                 cv_accuracy['Kernel Size'].append(kernel_size)
                 cv_accuracy['Filter Size'].append(filter_size)
                 mean_accuracy = float(np.mean(val_accuracies))
@@ -194,7 +142,7 @@ if __name__ == "__main__":
                 )
                 dummynet = ConvNet(layer_configs)
                 layer_configs[2]['in_features'] = dummynet.get_flattened_size()
-                val_accuracies = run_cnn_cv(trainset, layer_configs, epochs, learning_rate, cv_accuracy)
+                val_accuracies = run_cv(trainset=trainset, config_path=config_path, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
                 cv_accuracy['Epochs'].append(epochs)
                 cv_accuracy['Learning Rate'].append(learning_rate)
                 mean_accuracy = float(np.mean(val_accuracies))
