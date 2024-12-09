@@ -19,6 +19,7 @@ class ConvNet(nn.Module):
                     'kernel_size' = kernel size for conv
                 'activation' = either "sigmoid", "ReLU" or undefined/None
                 'pooling' = undefined if none, kernel_size: int if you want pooling
+                'dropout' = underfined if none, other wise, probability [0,1)
             (including activation function and pooling)
         """
         super(ConvNet, self).__init__()
@@ -48,6 +49,10 @@ class ConvNet(nn.Module):
             pooling = config.get('pooling', None) #stride = 2
             if pooling:
                 self.layers.append(nn.MaxPool2d(pooling))
+
+            dropout = config.get('dropout', None)
+            if dropout:
+                self.layers.append(nn.Dropout2d(p = dropout))
 
     def _get_activation(self, activation):
         activation = activation.lower()
