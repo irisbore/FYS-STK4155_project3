@@ -20,9 +20,7 @@ from src.models.CNN import ConvNet
 from src.models.LogisticRegression import LogisticRegression
 from src.utils import utils
 
-def run_cv(trainset: torch.Tensor, config_path: str, epochs: int, learning_rate: float, layer_configs: dict=None) -> dict:
-            config = utils.get_config(config_path)
-
+def run_cv(trainset: torch.Tensor, config: dict, epochs: int, learning_rate: float, layer_configs: dict=None) -> dict:
             # Initialize cross validation
             kfold = StratifiedKFold(n_splits=config["n_splits"]).split(trainset, trainset.targets)
             val_accuracies = []

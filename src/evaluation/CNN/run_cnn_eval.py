@@ -10,7 +10,7 @@ from src.utils import utils
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
-from src.models.grid_search_CNN import ConvNet
+from models.CNN import ConvNet
 
 def bootstrap(dataset: torch.Tensor, config):
         for i in tqdm(range(config["n_bootstraps"])):
@@ -20,7 +20,8 @@ def bootstrap(dataset: torch.Tensor, config):
                 torch.manual_seed(i)
                 rng = np.random.default_rng(seed=i)
                 idx = rng.choice(N, N, replace=True)
-                dataloader= DataLoader(dataset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(idx))
+                dataloader = DataLoader(dataset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(idx))
+
 
 
 
@@ -39,3 +40,4 @@ if __name__=="__main__":
         ])
         trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
         testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
+        full_data = torch.utils.data.ConcatDataset([trainset, testset])
