@@ -1,4 +1,4 @@
-grid_search: padding_vs_pooling
+grid_search: dropout_vs_activations
 save_results: True
 save_plot: True
 model_type: cnn
