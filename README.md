@@ -16,5 +16,5 @@
 
 - All experiments in `.py´ files can be ran by python3 filename.py
 - This will use the default config, with the same name as the script file, with .yaml extension
-- To provide a config: `python3 filename.py --path_to_config´
+- To provide a config: `python3 filename.py --path_to_config CONFIG´
 
