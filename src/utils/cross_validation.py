@@ -1,15 +1,11 @@
 
 import sys
 from tqdm import tqdm
-import numpy as np
-import seaborn as sns
-import matplotlib.pyplot as plt
 from sklearn.model_selection import StratifiedKFold
 import torch
 import torch.nn as nn
-import torch.optim as optim
-import torchvision as tv
-from torch.utils.data import Subset, DataLoader
+import torch.optim 
+from torch.utils.data import DataLoader
 import git 
 import yaml
 
@@ -20,15 +16,18 @@ from src.models.CNN import ConvNet
 from src.models.LogisticRegression import LogisticRegression
 from src.utils import utils
 
-def run_cv(trainset: torch.Tensor, config: dict, epochs: int, learning_rate: float, layer_configs: dict=None) -> dict:
+def run_cv(trainset: torch.Tensor, config: dict, epochs: int, learning_rate: float, layer_configs: dict=None, batch_size = None) -> dict:
             # Initialize cross validation
             kfold = StratifiedKFold(n_splits=config["n_splits"]).split(trainset, trainset.targets)
             val_accuracies = []
+
+            if batch_size == None:
+                batch_size = config['batch_size']
             for k, (train_idx, val_idx) in enumerate(kfold):
                 torch.manual_seed(k)
 
-                trainloader = DataLoader(trainset, batch_size=config['batch_size'], sampler=torch.utils.data.SubsetRandomSampler(train_idx))
-                valloader = DataLoader(trainset, batch_size=config['batch_size'], sampler=torch.utils.data.SubsetRandomSampler(val_idx))
+                trainloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(train_idx))
+                valloader = DataLoader(trainset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(val_idx))
 
                 #Initialize model with grid search values
                 if config['model_type'] == "cnn":

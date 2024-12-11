@@ -80,3 +80,12 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
         plt.show()
 
 
+def plot_parameter_study(param_values, accuracies, param_name):
+    plt.figure(figsize=(10, 6))
+    plt.plot(param_values, accuracies, 'bo-')
+    plt.xlabel(param_name)
+    plt.ylabel('CV Accuracy (%)')
+    plt.title(f'Impact of {param_name} on Model Accuracy')
+    plt.grid(True)
+    plt.savefig(f'{PATH_TO_ROOT}/results/logreg/{param_name.lower().replace(" ", "_")}_study.png')
+    plt.close()
