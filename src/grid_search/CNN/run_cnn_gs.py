@@ -12,6 +12,9 @@ from torch.utils.data import Subset, DataLoader
 import git 
 import yaml
 
+#Python run_cnn_gs.py —config_path config_name
+# example: python3 run_cnn_gs.py --config_path run_cnn_gs_pooling_vs_padding.yaml
+
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 
@@ -30,8 +33,8 @@ if __name__ == "__main__":
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
         ])
-    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
+    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=True, transform=transform)
+    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=True) 
 
     if config["grid_search"] == "kernel+filter":
         cv_accuracy = {
@@ -203,13 +206,13 @@ if __name__ == "__main__":
                 'pooling': 2
             },
             {
-                    'type':  "conv",
-                    'in_channels': filter_number[0],
-                    'out_channels': filter_number[1],
-                    'kernel_size': kernel_size,
-                    'activation': "ReLU",
-                    'pooling': 2
-                },
+                'type':  "conv",
+                'in_channels': filter_number[0],
+                'out_channels': filter_number[1],
+                'kernel_size': kernel_size,
+                'activation': "ReLU",
+                'pooling': 2
+            },
             {
                 'type':  "linear",
                 'in_features': 0,
@@ -237,6 +240,62 @@ if __name__ == "__main__":
         std_accuracy = float(np.std(val_accuracies))
         cv_accuracy['CV Accuracy'].append(mean_accuracy)
         cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+    
+    if config["grid_search"] == 'padding_vs_pooling':
+        learning_rate = config["learning_rate"]
+        epochs = config["epochs"]
+        filter_number = config["filter_number"]
+        kernel_size = config["kernel_size"]
+        cv_accuracy = {
+        'Padding': [0, (kernel_size-1)/2],
+        'Pooling' : [None, 2],
+        'CV Accuracy': [],
+        'CV Accuracy Std': []
+        }
+        for padding in cv_accuracy['Padding']:
+            for pooling in cv_accuracy['Pooling']:
+                layer_configs = [
+                {
+                    'type':  "conv",
+                    'in_channels': 1,
+                    'out_channels': filter_number[0],
+                    'kernel_size': kernel_size,
+                    'activation': "ReLU",
+                    'pooling': pooling
+                },
+                {
+                    'type':  "conv",
+                    'in_channels': filter_number[0],
+                    'out_channels': filter_number[1],
+                    'kernel_size': kernel_size,
+                    'activation': "ReLU",
+                    'pooling': pooling
+                },
+                {
+                    'type':  "linear",
+                    'in_features': 0,
+                    'out_features': 120,
+                    'activation': "ReLU",
+                },
+                {
+                    'type':  "linear",
+                    'in_features': 120,
+                    'out_features': 84,
+                    'activation': "ReLU",
+                },
+                {
+                    'type':  "linear",
+                    'in_features': 84,
+                    'out_features': 10,
+                }
+                ]
+                dummynet = ConvNet(layer_configs)
+                layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+                val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
+                mean_accuracy = float(np.mean(val_accuracies))
+                std_accuracy = float(np.std(val_accuracies))
+                cv_accuracy['CV Accuracy'].append(mean_accuracy)
+                cv_accuracy['CV Accuracy Std'].append(std_accuracy)
 
          
     if config['save_results'] == True:
