@@ -20,9 +20,7 @@ from src.utils import utils
 from src.utils.cross_validation import run_cv
 
 if __name__ == "__main__":
-    config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs.yaml"
-    )
+    config_path = utils.get_config_path()
     config = utils.get_config(config_path)
     torch.manual_seed(config["seed"])
     batch_size = config["batch_size"]
@@ -180,12 +178,12 @@ if __name__ == "__main__":
             },
             {
                 'type':  "linear",
-                'in_features': 84,
+                'in_features': 120,
                 'out_features': 10,
             }
         )
         dummynet = ConvNet(layer_configs)
-        layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+        layer_configs[1]['in_features'] = dummynet.get_flattened_size()
         val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
         cv_accuracy['Number of Convolutional Layers'].append(1)
         cv_accuracy['Number of Linear Layers'].append(2)
@@ -218,6 +216,12 @@ if __name__ == "__main__":
                 'out_features': 120,
                 'activation': "ReLU",
             },
+                        {
+                'type':  "linear",
+                'in_features': 120,
+                'out_features': 84,
+                'activation': "ReLU",
+            },
             {
                 'type':  "linear",
                 'in_features': 84,
@@ -227,15 +231,14 @@ if __name__ == "__main__":
         dummynet = ConvNet(layer_configs)
         layer_configs[2]['in_features'] = dummynet.get_flattened_size()
         val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
-        cv_accuracy['Number of Convolutional Layers'].append(1)
-        cv_accuracy['Number of Linear Layers'].append(2)
+        cv_accuracy['Number of Convolutional Layers'].append(2)
+        cv_accuracy['Number of Linear Layers'].append(3)
         mean_accuracy = float(np.mean(val_accuracies))
         std_accuracy = float(np.std(val_accuracies))
         cv_accuracy['CV Accuracy'].append(mean_accuracy)
         cv_accuracy['CV Accuracy Std'].append(std_accuracy)
 
          
-    
     if config['save_results'] == True:
         with open(PATH_TO_ROOT+f'/results/cnn_grid_search/results_'+config['grid_search']+'.yaml', 'w') as file: 
             file.write(yaml.dump(cv_accuracy))

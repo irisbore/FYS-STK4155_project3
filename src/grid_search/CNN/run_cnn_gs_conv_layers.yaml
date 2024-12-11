@@ -1,5 +1,6 @@
 grid_search: number_of_conv_layers
 save_results: True
+save_plot: True
 model_type: cnn
 batch_size: 64
 n_splits: 5
@@ -9,6 +10,6 @@ kernel_size: 5
 filter_number: [32, 64]
 print_interval: 2000
 seed: 1
-save_path: results/cnn_grid_search
+save_path: /results/cnn_grid_search
 
 

@@ -9,9 +9,22 @@ sys.path.append(PATH_TO_ROOT)
 from src.utils import utils
 
 if __name__== "__main__":
-    initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs.yaml"
 
-    # For first grid search for CNN
+
+    initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs_conv_layers.yaml"
+
+    # First grid search
+    grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_number_of_conv_layers.yaml')
+    df_results = pd.DataFrame(grid_search_results)
+
+    # Pivot the DataFrame
+    heatmap_data = df_results.pivot(index='Number of Convolutional Layers', columns='Number of Linear Layers', values='CV Accuracy')
+    
+    # Plot the heatmap
+    utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_layers.png")
+
+
+    # For __ grid search for CNN
     grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_kernel+filter.yaml')
     df_results = pd.DataFrame(grid_search_results)
     
@@ -20,10 +33,10 @@ if __name__== "__main__":
     
     # Pivot the DataFrame
     heatmap_data = df_results.pivot(index='Kernel Size', columns='Filter Number', values='CV Accuracy')
-    print(heatmap_data)
     
     # Plot the heatmap
     utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_kf.png")
+
 
     # For second grid search for CNN
     initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs_elr.yaml"
@@ -33,7 +46,6 @@ if __name__== "__main__":
     
     # Pivot the DataFrame
     heatmap_data = df_results.pivot(index='Learning Rate', columns='Epochs', values='CV Accuracy')
-    print(heatmap_data)
     # Plot the heatmap
     utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_elr.png")
 
