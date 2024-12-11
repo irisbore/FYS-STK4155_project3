@@ -44,8 +44,8 @@ if __name__ == "__main__":
         }
         learning_rate = config["learning_rate"]
         epochs = config["epochs"]
-        for kernel_size in config["kernel_size_grid"]:
-            for filter_size in config["filter_size_grid"]:
+        for kernel_size in config["kernel_size"]:
+            for filter_size in config["filter_size"]:
                 layer_configs = (
                     {
                         'type':  "conv",
@@ -100,10 +100,10 @@ if __name__ == "__main__":
             'CV Accuracy Std': []
             }
         filter_size = config["filter_size"]
-        kernel_size = config["epochs"]
-        for epochs in config["epochs_grid"]:
+        kernel_size = config["kernel_size"]
+        for epochs in config["epochs"]:
             print(f"On epoch number {epochs}")
-            for learning_rate in config["learning_rate_grid"]:
+            for learning_rate in config["learning_rate"]:
                 print(f"With learning rate {learning_rate}")
                 layer_configs = (
                     {
