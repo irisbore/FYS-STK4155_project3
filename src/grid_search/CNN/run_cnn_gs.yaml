@@ -1,7 +1,7 @@
 grid_search: kernel+filter 
 save_results: False
 model_type: cnn
-filter_number: [[8, 16]] #, [32, 64], [124, 256]]
+filter_number: [[8, 16]] #, [32, 64], [64, 128], [124, 256]]
 kernel_size: [3] #5, 7]
 batch_size: 64
 n_splits: 5
