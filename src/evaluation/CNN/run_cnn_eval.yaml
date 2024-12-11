@@ -1,3 +1,31 @@
+seed: 1
+n_bootstraps: 1000
+model_type: cnn
 learning_rate: 0.001
 batch_size: 64
-seed: 1
+print_interval: 1000
+epochs: 20
+layer_configs:
+  - type: "conv"
+    in_channels: 1
+    out_channels: 32
+    kernel_size: 5
+    activation: "ReLU"
+    pooling: 2
+  - type: "conv"
+    in_channels: 32
+    out_channels: 64
+    kernel_size: 5
+    activation: "ReLU"
+    pooling: 2
+  - type: "linear"
+    in_features: 0
+    out_features: 120
+    activation: "ReLU"
+  - type: "linear"
+    in_features: 120
+    out_features: 84
+    activation: "ReLU"
+  - type: "linear"
+    in_features: 84
+    out_features: 10
