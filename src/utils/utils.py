@@ -11,6 +11,9 @@ import torch
 import seaborn as sns
 import matplotlib.pyplot as plt
 import pandas as pd
+import git
+PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
+sys.path.append(PATH_TO_ROOT)
 
 
 def get_config(path) -> Dict:
@@ -58,18 +61,21 @@ def get_config_path(default_path=None) -> str:
 
 def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: str=None, annot = True):
     config = get_config(config_path)
+    if config['grid_search'] == 'number_of_conv_layers':
+        title = rf"CV Accuracy for Different Numbers of Layers"
+
     if config['grid_search'] == 'kernel+filter':
         lr = config["learning_rate"]
         title = rf"CV Accuracy for Number of Kernels and Filters, with $\eta = {lr} $"
 
     if config['grid_search'] == 'epochs+lr':
-        lr = config["learning_rate"]
         title = rf"CV Accuracy for Different Values of Epochs and Learning Rates"
-    sns.heatmap(df, annot=annot)
+    plt.clf()
+    sns.heatmap(df, annot=annot, fmt='.3g')
     plt.title(title)
     plt.tight_layout()
-    if filename:
-        plt.savefig(config["save_path"]+'/'+filename)
+    if config["save_plot"]:
+        plt.savefig(PATH_TO_ROOT+config["save_path"]+'/'+filename)
     else:
         plt.show()
 
