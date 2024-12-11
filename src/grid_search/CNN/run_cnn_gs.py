@@ -151,8 +151,89 @@ if __name__ == "__main__":
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
 
     
-    if config["grid_search"] == 'stride+padding':
-        pass
+    if config["grid_search"] == 'number_of_conv_layers':
+        cv_accuracy = {
+        'Number of Convolutional Layers': [],
+        'Number of Linear Layers' : [],
+        'CV Accuracy': [],
+        'CV Accuracy Std': []
+        }
+        learning_rate = config["learning_rate"]
+        epochs = config["epochs"]
+        filter_number = config["filter_number"]
+        kernel_size = config["kernel_size"]
+        # First search
+        layer_configs = (
+            {
+                'type':  "conv",
+                'in_channels': 1,
+                'out_channels': filter_number[0],
+                'kernel_size': kernel_size,
+                'activation': "ReLU",
+                'pooling': 2
+            },
+            {
+                'type':  "linear",
+                'in_features': 0,
+                'out_features': 120,
+                'activation': "ReLU",
+            },
+            {
+                'type':  "linear",
+                'in_features': 84,
+                'out_features': 10,
+            }
+        )
+        dummynet = ConvNet(layer_configs)
+        layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+        val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
+        cv_accuracy['Number of Convolutional Layers'].append(1)
+        cv_accuracy['Number of Linear Layers'].append(2)
+        mean_accuracy = float(np.mean(val_accuracies))
+        std_accuracy = float(np.std(val_accuracies))
+        cv_accuracy['CV Accuracy'].append(mean_accuracy)
+        cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+
+        #Second search
+        layer_configs = (
+            {
+                'type':  "conv",
+                'in_channels': 1,
+                'out_channels': filter_number[0],
+                'kernel_size': kernel_size,
+                'activation': "ReLU",
+                'pooling': 2
+            },
+            {
+                    'type':  "conv",
+                    'in_channels': filter_number[0],
+                    'out_channels': filter_number[1],
+                    'kernel_size': kernel_size,
+                    'activation': "ReLU",
+                    'pooling': 2
+                },
+            {
+                'type':  "linear",
+                'in_features': 0,
+                'out_features': 120,
+                'activation': "ReLU",
+            },
+            {
+                'type':  "linear",
+                'in_features': 84,
+                'out_features': 10,
+            }
+        )
+        dummynet = ConvNet(layer_configs)
+        layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+        val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
+        cv_accuracy['Number of Convolutional Layers'].append(1)
+        cv_accuracy['Number of Linear Layers'].append(2)
+        mean_accuracy = float(np.mean(val_accuracies))
+        std_accuracy = float(np.std(val_accuracies))
+        cv_accuracy['CV Accuracy'].append(mean_accuracy)
+        cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+
          
     
     if config['save_results'] == True:
