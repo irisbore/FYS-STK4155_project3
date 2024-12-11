@@ -17,6 +17,7 @@ class ConvNet(nn.Module):
                     'in_channels' = input dimensions for conv
                     'out_channels' = output dimensions for conv
                     'kernel_size' = kernel size for conv
+                    'padding' = padding (default = 0)
                 'activation' = either "sigmoid", "ReLU" or undefined/None
                 'pooling' = undefined if none, kernel_size: int if you want pooling
                 'dropout' = underfined if none, other wise, probability [0,1)
@@ -37,7 +38,8 @@ class ConvNet(nn.Module):
                 inc = config['in_channels']
                 outc = config['out_channels']
                 k_sz = config['kernel_size']
-                self.layers.append(nn.Conv2d(inc, outc, k_sz))
+                padding = config.get('padding', 0)
+                self.layers.append(nn.Conv2d(inc, outc, k_sz, padding=padding))
             
             #activation func
             activation = config.get('activation', None)
@@ -46,7 +48,7 @@ class ConvNet(nn.Module):
                     self.layers.append(act) #adds activation as the next "layer"
 
             #pooling
-            pooling = config.get('pooling', None) #stride = 2
+            pooling = config.get('pooling', None) #stride, kernel size = pooling
             if pooling:
                 self.layers.append(nn.MaxPool2d(pooling))
 
