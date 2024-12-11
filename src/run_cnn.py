@@ -4,7 +4,7 @@ import torch
 import torch.nn as nn
 import torchvision
 import torchvision.transforms as transforms
-from models.grid_search_CNN import ConvNet
+from models.CNN import ConvNet
 import utils.load_data as ld
 
 #hyperparameters
