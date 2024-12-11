@@ -38,27 +38,27 @@ if __name__ == "__main__":
     if config["grid_search"] == "kernel+filter":
         cv_accuracy = {
         'Kernel Size': [],
-        'Filter Size': [],
+        'Filter Number': [],
         'CV Accuracy': [],
         'CV Accuracy Std': []
         }
         learning_rate = config["learning_rate"]
         epochs = config["epochs"]
         for kernel_size in config["kernel_size"]:
-            for filter_size in config["filter_size"]:
+            for filter_number in config["filter_number"]:
                 layer_configs = (
                     {
                         'type':  "conv",
                         'in_channels': 1,
-                        'out_channels': filter_size[0],
+                        'out_channels': filter_number[0],
                         'kernel_size': kernel_size,
                         'activation': "ReLU",
                         'pooling': 2
                     },
                     {
                         'type':  "conv",
-                        'in_channels': filter_size[0],
-                        'out_channels': filter_size[1],
+                        'in_channels': filter_number[0],
+                        'out_channels': filter_number[1],
                         'kernel_size': kernel_size,
                         'activation': "ReLU",
                         'pooling': 2
@@ -85,7 +85,7 @@ if __name__ == "__main__":
                 layer_configs[2]['in_features'] = dummynet.get_flattened_size()
                 val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
                 cv_accuracy['Kernel Size'].append(kernel_size)
-                cv_accuracy['Filter Size'].append(filter_size)
+                cv_accuracy['Filter Number'].append(filter_number)
                 mean_accuracy = float(np.mean(val_accuracies))
                 std_accuracy = float(np.std(val_accuracies))
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
@@ -99,7 +99,7 @@ if __name__ == "__main__":
             'CV Accuracy': [],
             'CV Accuracy Std': []
             }
-        filter_size = config["filter_size"]
+        filter_number = config["filter_number"]
         kernel_size = config["kernel_size"]
         for epochs in config["epochs"]:
             print(f"On epoch number {epochs}")
@@ -109,15 +109,15 @@ if __name__ == "__main__":
                     {
                         'type':  "conv",
                         'in_channels': 1,
-                        'out_channels': filter_size[0],
+                        'out_channels': filter_number[0],
                         'kernel_size': kernel_size,
                         'activation': "ReLU",
                         'pooling': 2
                     },
                     {
                         'type':  "conv",
-                        'in_channels': filter_size[0],
-                        'out_channels': filter_size[1],
+                        'in_channels': filter_number[0],
+                        'out_channels': filter_number[1],
                         'kernel_size': kernel_size,
                         'activation': "ReLU",
                         'pooling': 2
@@ -149,6 +149,10 @@ if __name__ == "__main__":
                 std_accuracy = float(np.std(val_accuracies))
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+
+    
+    if config["grid_search"] == 'stride+padding':
+        pass
          
     
     if config['save_results'] == True:

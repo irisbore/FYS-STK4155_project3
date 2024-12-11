@@ -6,7 +6,7 @@ n_splits: 5
 epochs: [2,3,5]
 learning_rate: [0.01, 0.001] #, 0.001, 0.0001]
 kernel_size: 5 # 
-filter_size: [124, 256] 
+filter_number: [124, 256] 
 print_interval: 2000
 seed: 1
 save_path: results/cnn_grid_search
