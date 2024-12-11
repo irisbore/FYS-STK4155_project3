@@ -248,7 +248,7 @@ if __name__ == "__main__":
         kernel_size = config["kernel_size"]
         cv_accuracy = {
         'Padding': [0, (kernel_size-1)/2],
-        'Pooling' : [None, 2],
+        'Pooling' : [0, 2],
         'CV Accuracy': [],
         'CV Accuracy Std': []
         }
@@ -282,6 +282,65 @@ if __name__ == "__main__":
                     'in_features': 120,
                     'out_features': 84,
                     'activation': "ReLU",
+                },
+                {
+                    'type':  "linear",
+                    'in_features': 84,
+                    'out_features': 10,
+                }
+                ]
+                dummynet = ConvNet(layer_configs)
+                layer_configs[2]['in_features'] = dummynet.get_flattened_size()
+                val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
+                mean_accuracy = float(np.mean(val_accuracies))
+                std_accuracy = float(np.std(val_accuracies))
+                cv_accuracy['CV Accuracy'].append(mean_accuracy)
+                cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+    
+    if config["grid_search"] == 'dropout_vs_activations':
+        learning_rate = config["learning_rate"]
+        epochs = config["epochs"]
+        filter_number = config["filter_number"]
+        kernel_size = config["kernel_size"]
+        pooling = config["pooling"]
+        cv_accuracy = {
+        'Dropout rate': [0.3, 0.4, 0.5], # dropout after conv layers
+        'Activation functions' : ['ReLU', 'Leaky ReLU'],
+        'CV Accuracy': [],
+        'CV Accuracy Std': []
+        }
+        for dropout_rate in cv_accuracy['Dropout rate']:
+            for activation_function in cv_accuracy['Activation functions']:
+                layer_configs = [
+                {
+                    'type':  "conv",
+                    'in_channels': 1,
+                    'out_channels': filter_number[0],
+                    'kernel_size': kernel_size,
+                    'activation': activation_function,
+                    'pooling': pooling
+                },
+                {
+                    'type':  "conv",
+                    'in_channels': filter_number[0],
+                    'out_channels': filter_number[1],
+                    'kernel_size': kernel_size,
+                    'activation': activation_function,
+                    'pooling': pooling
+                },
+                {
+                    'type':  "linear",
+                    'in_features': 0,
+                    'out_features': 120,
+                    'activation': activation_function,
+                    'dropout': dropout_rate
+                },
+                {
+                    'type':  "linear",
+                    'in_features': 120,
+                    'out_features': 84,
+                    'activation': activation_function,
+                    'dropout': dropout_rate
                 },
                 {
                     'type':  "linear",

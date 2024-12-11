@@ -20,7 +20,7 @@ class ConvNet(nn.Module):
                     'padding' = padding (default = 0)
                 'activation' = either "sigmoid", "ReLU" or undefined/None
                 'pooling' = undefined if none, kernel_size: int if you want pooling
-                'dropout' = underfined if none, other wise, probability [0,1)
+                'dropout' = underfined if none, other wise, probability (0,1)
             (including activation function and pooling)
         """
         super(ConvNet, self).__init__()
@@ -52,7 +52,7 @@ class ConvNet(nn.Module):
             if pooling:
                 self.layers.append(nn.MaxPool2d(pooling))
 
-            dropout = config.get('dropout', None)
+            dropout = config.get('dropout', None) # generally applied after pooling
             if dropout:
                 self.layers.append(nn.Dropout2d(p = dropout))
 

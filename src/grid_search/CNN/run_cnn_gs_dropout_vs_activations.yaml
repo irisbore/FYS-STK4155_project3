@@ -11,5 +11,4 @@ filter_number: [32, 64]
 print_interval: 2000
 seed: 1
 save_path: /results/cnn_grid_search
-
-
+pooling: 2
