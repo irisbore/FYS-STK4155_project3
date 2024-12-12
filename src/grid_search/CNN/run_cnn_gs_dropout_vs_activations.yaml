@@ -1,5 +1,5 @@
 grid_search: dropout_vs_activations
-save_results: True
+save_results: True # Do not change this file after Dec 12 before delivery
 save_plot: True
 model_type: cnn
 batch_size: 64

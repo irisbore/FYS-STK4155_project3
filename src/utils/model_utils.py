@@ -31,7 +31,8 @@ def train_model(trainloader: DataLoader, config: dict, layer_configs=None, learn
             model = LogisticRegression()
             criterion = nn.NLLLoss()
             optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
-            
+        
+        
         for epoch in tqdm(range(epochs)):
             running_loss = 0.0
             for i, data in enumerate(trainloader):
@@ -72,6 +73,7 @@ def test_model(testloader, model):         # Test on data set
 
 def test_model_classwise(testloader, model, classes):
      # prepare to count predictions for each class
+    score_df = {classname: 0 for classname in classes}
     correct_pred = {classname: 0 for classname in classes}
     total_pred = {classname: 0 for classname in classes}
 
@@ -92,4 +94,5 @@ def test_model_classwise(testloader, model, classes):
     for classname, correct_count in correct_pred.items():
         accuracy = 100 * float(correct_count) / total_pred[classname]
         print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
-    return correct_pred
+        score_df[classname] = accuracy
+    return score_df

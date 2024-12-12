@@ -48,7 +48,7 @@ if __name__== "__main__":
     grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_dropout_vs_activations.yaml')
     df_results = pd.DataFrame(grid_search_results)
     # Pivot the DataFrame
-    heatmap_data = df_results.pivot(index='Pooling', columns='Padding', values='CV Accuracy')
+    heatmap_data = df_results.pivot(index='Activation Function', columns='Dropout Rate', values='CV Accuracy')
     # Plot the heatmap
     utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_da.png")
 

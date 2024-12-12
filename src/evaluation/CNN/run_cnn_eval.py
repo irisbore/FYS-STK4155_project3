@@ -1,35 +1,15 @@
+import sys
+
+
 import torch
-import numpy as np
 from torch.utils.data import DataLoader
 import torchvision
 import git
-import sys
-import seaborn as sns
-import matplotlib.pyplot as plt
-from tqdm import tqdm
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
-from src.utils import utils, model_utils
+from src.utils import utils, model_utils, bootstrap
 from src.models.CNN import ConvNet
-
-def get_bootstrap_sample(dataset: torch.Tensor, config: dict, seed: int) -> DataLoader:
-        batch_size = config["batch_size"]
-        N = len(dataset)
-        torch.manual_seed(seed)
-        rng = np.random.default_rng(seed=seed)
-        idx = rng.choice(N, N, replace=True)
-        dataloader = DataLoader(dataset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(idx))
-        return dataloader
-
-def bootstrap_test_set(testset, model):
-        total_accuracies = []
-        for i in tqdm(range(config["n_bootstraps"])):
-                testloader = get_bootstrap_sample(testset, config, i)
-                accuracy = model_utils.test_model(testloader, model)
-                total_accuracies.append(accuracy)
-
-        return total_accuracies
 
 
 if __name__=="__main__":
@@ -74,8 +54,12 @@ if __name__=="__main__":
         accuracy = model_utils.test_model(testloader, model)
         print(f'Accuracy on test set is {accuracy}%')
         classes = testset.classes
-        accuracy = model_utils.test_model_classwise(testloader, model, classes)
-        # total_accuracies = bootstrap_test_set(testset, model)
+        ## TODO : run this below 
+
+        score_df = model_utils.test_model_classwise(testloader, model, classes)
+        utils.plot_classwise(score_df)
+        
+        # total_accuracies = bootstrap.bootstrap_test_set(testset, model)
         # lower_bound = np.percentile(total_accuracies, 2.5)
         # upper_bound = np.percentile(total_accuracies, 97.5)
         # mean_accuracy = np.mean(total_accuracies)
@@ -86,7 +70,5 @@ if __name__=="__main__":
         # plt.title("Accuracy on test set")
         # plt.show()
 
-        # classes = testset.classes
-        # model_utils.test_model_classwise(testloader, model, classes)
 
         

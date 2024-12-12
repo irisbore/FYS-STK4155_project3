@@ -72,7 +72,7 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
         title = rf"CV Accuracy with and without Padding and Pooling"
 
     if config['grid_search'] == 'dropout_vs_activations':
-        title = rf"CV Accuracy for Different Dropout Rates and Activation functions"
+        title = rf"CV Accuracy for Dropout Rates and Activation Functions (20 Epochs)"
     plt.clf()
     sns.heatmap(df, annot=annot, fmt='.3g')
     plt.title(title)
@@ -82,7 +82,15 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
     else:
         plt.show()
 
-
+def plot_classwise(df, title, save_plot, filename):
+    plt.clf()
+    sns.heatmap(df, annot=True, fmt='.3g')
+    plt.title(title)
+    plt.tight_layout()
+    if save_plot:
+        plt.savefig(PATH_TO_ROOT+'results/cnn_eval/'+filename)
+    else:
+        plt.show()
 def plot_parameter_study(param_values, accuracies, param_name):
     plt.figure(figsize=(10, 6))
     plt.plot(param_values, accuracies, 'bo-')
