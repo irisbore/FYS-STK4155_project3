@@ -1,0 +1,20 @@
+Activation Function:
+- ReLU
+- LeakyReLU
+- ReLU
+- LeakyReLU
+CV Accuracy:
+- 98.0
+- 98.0
+- 98.0
+- 98.0
+CV Accuracy Std:
+- 0.0
+- 0.0
+- 0.0
+- 0.0
+Dropout Rate:
+- 0.3
+- 0.3
+- 0.5
+- 0.5

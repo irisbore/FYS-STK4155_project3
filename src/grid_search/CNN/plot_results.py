@@ -43,14 +43,14 @@ if __name__== "__main__":
     utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_pp.png")
 
     #----------------------------------------------------------------------------------------------------------------------------------------------#
-    # Plot final grid search (NOT RUN YET)
-    # initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs_dropout_vs_activations.yaml"
-    # grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_dropout_vs_activations.yaml')
-    # df_results = pd.DataFrame(grid_search_results)
-    # # Pivot the DataFrame
-    # heatmap_data = df_results.pivot(index='Pooling', columns='Padding', values='CV Accuracy')
-    # # Plot the heatmap
-    # utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_da.png")
+    #Plot final grid search 
+    initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs_dropout_vs_activations.yaml"
+    grid_search_results = utils.get_config(PATH_TO_ROOT+'/results/cnn_grid_search/results_dropout_vs_activations.yaml')
+    df_results = pd.DataFrame(grid_search_results)
+    # Pivot the DataFrame
+    heatmap_data = df_results.pivot(index='Pooling', columns='Padding', values='CV Accuracy')
+    # Plot the heatmap
+    utils.plot_grid_heatmap(heatmap_data, config_path=initial_config_path, filename="heatmap_grid_search_da.png")
 
 
     

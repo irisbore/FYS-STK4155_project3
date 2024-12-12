@@ -68,8 +68,11 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
         lr = config["learning_rate"]
         title = rf"CV Accuracy for Number of Kernels and Filters, with $\eta = {lr} $"
 
-    if config['grid_search'] == 'epochs+lr':
-        title = rf"CV Accuracy for Different Values of Epochs and Learning Rates"
+    if config['grid_search'] == 'padding_vs_pooling':
+        title = rf"CV Accuracy with and without Padding and Pooling"
+
+    if config['grid_search'] == 'dropout_vs_activations':
+        title = rf"CV Accuracy for Different Dropout Rates and Activation functions"
     plt.clf()
     sns.heatmap(df, annot=annot, fmt='.3g')
     plt.title(title)
