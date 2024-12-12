@@ -10,7 +10,11 @@ CV Accuracy Std:
 - 0.4
 Padding:
 - 0
+- 0
+- 2.0
 - 2.0
 Pooling:
+- 0
+- 2
 - 0
 - 2

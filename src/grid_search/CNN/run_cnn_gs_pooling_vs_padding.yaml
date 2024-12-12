@@ -1,6 +1,6 @@
-grid_search: padding_vs_pooling
+grid_search: padding_vs_pooling # This file was used on final dec 12, do not change before delivery
 save_results: True
-save_plot: False
+save_plot: True
 model_type: cnn
 batch_size: 64
 n_splits: 5

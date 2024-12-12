@@ -1,6 +1,6 @@
 grid_search: dropout_vs_activations
 save_results: True
-save_plot: True
+save_plot: False
 model_type: cnn
 batch_size: 64
 n_splits: 5

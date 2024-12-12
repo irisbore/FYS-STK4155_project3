@@ -35,9 +35,10 @@ if __name__ == "__main__":
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
         ])
-    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=True, transform=transform)
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=True) 
-            
+    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=True, download=False, transform=transform) #CHANGE TO DOWNLOAD=FALSE IF PREVIOUSLY RUN
+    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=False,transform=transform, download=True) 
+    
+    #---------------------------------------------------------------------------------------------------------------------------------------------#
     # FIRST GRID SEARCH 
     if config["grid_search"] == 'number_of_conv_layers':
         cv_accuracy = {
@@ -50,7 +51,7 @@ if __name__ == "__main__":
         epochs = config["epochs"]
         filter_number = config["filter_number"]
         kernel_size = config["kernel_size"]
-        # First search
+        # First model type
         layer_configs = (
             {
                 'type':  "conv",
@@ -82,7 +83,7 @@ if __name__ == "__main__":
         cv_accuracy['CV Accuracy'].append(mean_accuracy)
         cv_accuracy['CV Accuracy Std'].append(std_accuracy)
 
-        #Second search
+        #Second model type
         layer_configs = (
             {
                 'type':  "conv",
@@ -128,7 +129,8 @@ if __name__ == "__main__":
         cv_accuracy['CV Accuracy'].append(mean_accuracy)
         cv_accuracy['CV Accuracy Std'].append(std_accuracy)
 
-
+    #---------------------------------------------------------------------------------------------------------------------------------------------#
+    # SECOND GRID SEARCH
     if config["grid_search"] == "kernel+filter":
         cv_accuracy = {
         'Kernel Size': [],
@@ -184,7 +186,9 @@ if __name__ == "__main__":
                 std_accuracy = float(np.std(val_accuracies))
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
-    
+
+    #---------------------------------------------------------------------------------------------------------------------------------------------#
+    # THIRD GRID SEARCH
     if config["grid_search"] == 'padding_vs_pooling':
         learning_rate = config["learning_rate"]
         epochs = config["epochs"]
@@ -245,7 +249,9 @@ if __name__ == "__main__":
                 cv_accuracy['Pooling'].append(pooling)
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
-    
+
+    #---------------------------------------------------------------------------------------------------------------------------------------------#
+    # FOURTH GRID SEARCH: 
     if config["grid_search"] == 'dropout_vs_activations':
         learning_rate = config["learning_rate"]
         epochs = config["epochs"]
@@ -253,7 +259,7 @@ if __name__ == "__main__":
         kernel_size = config["kernel_size"]
         pooling = config["pooling"]
         cv_accuracy = {
-        'Dropout Rate': [], # dropout after conv layers
+        'Dropout Rate': [], 
         'Activation Function' : [],
         'CV Accuracy': [],
         'CV Accuracy Std': []
@@ -307,7 +313,7 @@ if __name__ == "__main__":
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
 
-         
+#---------------------------------------------------------------------------------------------------------------------------------------------#
     if config['save_results'] == True:
         with open(PATH_TO_ROOT+f'/results/cnn_grid_search/results_'+config['grid_search']+'.yaml', 'w') as file: 
             file.write(yaml.dump(cv_accuracy))
