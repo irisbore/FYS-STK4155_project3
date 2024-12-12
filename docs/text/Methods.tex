@@ -1,4 +1,4 @@
-This study primarily focused on implementing and comparing the performance of various Convolutional Neural Networks (CNNs) with different layers, kernel sizes, filter numbers, and activation functions on the MNIST dataset. To illustrate the advantages of CNNs, we benchmarked our results against Logistic Regression (LR) across five different learning rates, batch sizes, and epochs. To ensure the robustness and reliability of our findings, we employed several data preprocessing and optimization techniques, including train-test splitting, cross-validation on the training set, and bootstrapping on the test set.                
+This study primarily focused on implementing and comparing the performance of various Convolutional Neural Networks (CNNs) with different layers, kernel sizes, filter numbers, activation functions and regularization techniques on the MNIST dataset. To illustrate the advantages of CNNs, we benchmarked our results against Logistic Regression (LR) across five different learning rates, batch sizes and epochs. To ensure the robustness and reliability of our findings, we employed several data preprocessing and optimization techniques, including train-test splitting, cross-validation on the training set, and bootstrapping on the test set.                
 
 
 \subsection{Data Loading and Preprocessing}
@@ -8,8 +8,7 @@ This study primarily focused on implementing and comparing the performance of va
 We used PyTorch to load the MNIST dataset, which comprises 70,000 images in total. This dataset is pre-divided into a training set of 60,000 images and a test set of 10,000 images. During the optimization process, the training set was utilized to iteratively update the model parameters in order to minimize the loss function. Meanwhile, the test set remained completely untouched until the final evaluation phase. This separation allowed us to evaluate the model's ability to generalize to new, unseen data. By conducting model selection and hyperparameter tuning exclusively on the training data, and reserving final performance checks for the test data, we obtained a more realistic measure of the model’s predictive power and robustness.
 
 \subsubsection{Feature Scaling}
-
-Given that our dataset is composed of pixels confined to a specific range, we relied on Raschka's perspective that scaling the MNIST dataset was unnecessary \cite{raschka2022machine}. Although we have consistently scaled our data in the previous projects, our primary goal for this project was to optimize parameters through cross-validation on the training data. To prevent data leakage between folds and to reduce the computational costs associated with scaling within each fold, we decided not to scale the data.
+When loading our data set, we scaled the pixels to be within the range [0, 1]. This normalization ensured that the input features (pixels) lied within a more uniform and manageable range than the original pixel range of [0,255]. As a result, the optimization routines, such as stochastic gradient descent or Adam, could converge more quickly and reliably, reducing the chances of getting stuck in poor local minima or suffering from numerical instabilities. In essence, feature scaling fosters a more stable and efficient learning environment for the model. 
 
 \subsection{Classification Techniques}
 
@@ -99,9 +98,15 @@ where $\mathbf{X}$ is the design matrix with rows $\boldsymbol{x}_i^\mathrm{T}$,
 
 Parameters are estimated by minimizing $C(\boldsymbol{\beta})$ using iterative methods, such as gradient descent, since there is no closed-form solution for logistic regression coefficients \cite{Hjorth-Jensen_MachineLearning_2023}.
 
-\subsection{Other Techniques}
+\subsection{Optimization Techniques}
 To explore how we could optimize the performance of the convolutional network, we used pooling (Max Pooling) and dropout.
 
+\subsubsection{Padding and Pooling:}
+\iris{I moved this nice section from the implementation, but kept the range values.}
+Padding (in convolutional layers) and Pooling are complimentary, increasing and decreasing tensor dimensions respectively. Setting padding ($P$) in a convolutional layer to $\frac {K-1}2$ where $K$ is the kernel size means the output tensor has the same dimensionality (discounting number of channels) as the input tensor, assuming stride $= 1$ (\ref{eq:pooling-dims}). We test $P = 0,\frac {K-1}2$, and Pooling Kernel Size = $0,2$, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
+
+\subsubsection{Dropout and Activation functions}
+We performed a grid search with various dropout layers, and the activation functions ReLU and Leaky ReLU (used for all except the last output). ChatGPT-4o suggested using dropout layer after the first two (of three) linear layers, with a range of dropout probabilities between 0.3-0.5, so we  tested the values \{0.3, 0.4, 0.5\} in that configuration \cite{openai2023chatgpt}. \iris{can we find an original source for this?} ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}.
 \subsubsection{Pooling}
 We used Max Pooling, which is used to reduce the dimensionality of an input tensor (usually after a convolutional layer). For a kernel size of $n$, scans $n\times n$ grids and selects the highest values respectively. This grid moves over a number of elements equal to the pooling layer's stride between each such scan, and in our implementation using torch.nn.MaxPool2d(), stride is always equal to kernel size such that these filters never overlap. Pooling modifies the dimensions of the tensor passed through it as shown in equation \ref{eq:pooling-dims}.
 
@@ -172,20 +177,22 @@ In addition to cross-validation, bootstrapping was used to estimate the accuracy
 \subsection{Implementation}
 
 The CNN class was implemented using the \texttt{PyTorch} library \cite{Paszke2019}, drawing inspiration from the "Training a Classifier" tutorial in the PyTorch documentation \cite{pytorch_cifar10_tutorial}. After studying this example as a proper way to code a CNN with PyTorch, we created a class capable of accommodating various network structures, enabling us to perform grid searches for the optimal configuration. For the initial parameters of our grid search experiments, we partially adopted the values from Raschka's example of a CNN for the MNIST dataset \cite{raschka2022machine}. However, we opted to limit the number of epochs to ten since Raschka's validation curves indicated convergence after five epochs. Given our limited computational resources and the large size of our training dataset, testing every possible configuration was not feasible. Therefore, we chose to start with informed initial values rather than random ones. After each grid search, we iteratively replaced the initial parameters with the best-performing values.
-
+\\
+\\
 The logistic regression was also implemented using the \texttt{PyTorch} library but with help from Antropic's Claude 3.5 Sonnet ai model \cite{anthropic_claude_3_5_sonnet}. Based on initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in range from 16 to 256 and epochs in range from 5 to 25. 
-
-The following steps summarize the implementation process of our experiment:
-
-\begin{table}[h]
+\\
+\\
+The following steps summarize the implementation process of our experiment, with the initial values for the CNN presented in Table \ref{tb:initialvalues}:
+\begin{table}[H]
     \centering
-    \caption{Table with inital values before hyper parameter tuning, adapted from Raschka \cite{raschka2022machine}}
+    \caption{Table with inital values for CNN before hyper parameter tuning, adapted from Raschka \cite{raschka2022machine}}
     
 \begin{tabular}{|l|l|l|l|l|l|l|}
 \hline
                        & \textbf{Epochs} & \textbf{Batch Size} & \textbf{Learning Rate} & \textbf{Optimizer} & \textbf{Kernel size} & \textbf{Filter Numbers} \\ \hline
 \textbf{Inital values} & 10              & 64                  & 0.001                  & Adam               & 5                    & (32, 64)                \\ \hline
 \end{tabular}
+\label{tb:initialvalues}
 \end{table}
 
 \begin{enumerate}
@@ -193,15 +200,16 @@ The following steps summarize the implementation process of our experiment:
     \item \textbf{Baseline model}: Tune our Logistic Regression model using cross-validation.
     \item \textbf{Tune CNN}: Grid search the hyperparameters of our CNN in the following order, using cross-validation:
     \begin{enumerate}
-        \item Test one convolutional layer followed by two linear layers against two convolutional layer followed by three linear layers.
+        \item \textbf{Number of Linear and Convolutional Layers} Test one convolutional layer followed by two linear layers against two convolutional layer followed by three linear layers.
+        \item \textbf{Kernel Size and Number of Filters}
+        We test Kernel Size: \{3, 5, 7\} and Number of Filters: \{(8,16), (16, 32), (32,64)\}.
+        \item \textbf{Pooling and Padding}
+        We test $P = \{0,\frac {K-1}2\}$, and Pooling Kernel Size: \{0,2\}, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
+        \item \textbf{Droput rates and Activation Functions}
+        We  tested the drop out rates \{0.3, 0.4, 0.5\} in that configuration \cite{openai2023chatgpt}. \iris{can we find an original source for this?} We test Activation Functions: \{ReLU, Leaky ReLU\} as ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}.
     \end{enumerate}
-    \item \textbf{Padding and Pooling:}
-    Padding (in convolutional layers) and Pooling are complimentary, increasing and decreasing tensor dimensions respectively. Setting padding ($P$) in a convolutional layer to $\frac {K-1}2$ where $K$ is the kernel size means the output tensor has the same dimensionality (discounting number of channels) as the input tensor, assuming stride $= 1$ (\ref{eq:pooling-dims}). We test $P = 0,\frac {K-1}2$, and Pooling Kernel Size = $0,2$, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
-    \item \textbf{Dropout and Activation functions}
-    We performed a grid search with various dropout layers, and the activation functions ReLU and Leaky ReLU (used for all except the last output). ChatGPT-4o suggested using dropout layer after the first two (of three) linear layers, with a range of dropout probabilities between 0.3-0.5, so we  tested the values \{0.3, 0.4, 0.5\} in that configuration \cite{openai2023chatgpt}. \iris{can we find an original source for this?} ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}.
-    \item \textbf{Model Training:} Train CNNs and Logistic Regression on the training data.
-    \item \textbf{Parameter Tuning:} Use a range of learning rates, batchsizes and epochs to find optimal Accuracy scores. 
-    \item \textbf{Testing:} Assess the final model performance on the testing set.
+    \item \textbf{Model Training:} Train CNNs and Logistic Regression on the training data with their respective validated hyper parameters. We use 
+    \item \textbf{Testing:} Assess the final model performance on the test set. 
 \end{enumerate}
 
 
