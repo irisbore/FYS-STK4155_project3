@@ -46,6 +46,10 @@ if __name__=="__main__":
         ])
         trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
 
+        image, label = trainset[0]
+
+        print("Pixel value range: ", image.min().item(), image.max().item())
+
         testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,download=False, transform=transform) 
 
         # Model uncertainty

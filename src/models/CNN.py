@@ -54,7 +54,7 @@ class ConvNet(nn.Module):
 
             dropout = config.get('dropout', None) # generally applied after pooling
             if dropout:
-                self.layers.append(nn.Dropout2d(p = dropout))
+                self.layers.append(nn.Dropout(p = dropout))
 
     def _get_activation(self, activation):
         activation = activation.lower()
