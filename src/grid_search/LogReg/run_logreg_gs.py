@@ -31,8 +31,8 @@ if __name__ == "__main__":
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
     ])
-    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,transform=transform, download=False) 
+    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=True, download=True, transform=transform)
+    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=False,transform=transform, download=False) 
 
     # Get parameter lists from config
     learning_rates = config["learning_rates"]
@@ -45,7 +45,7 @@ if __name__ == "__main__":
     epoch_accuracies = []
 
     for lr in learning_rates:
-        val_accuracies = run_cv(trainset, config, epochs=10, learning_rate=lr)
+        val_accuracies = run_cv(trainset, config, epochs=10, learning_rate=lr, batch_size=64)
         mean_accuracy = float(np.mean(val_accuracies))
         std_accuracy = float(np.std(val_accuracies))
         lr_accuracies.append(mean_accuracy)
@@ -59,7 +59,7 @@ if __name__ == "__main__":
         print(f"Batch size: {batch_size}, CV Accuracy: {mean_accuracy:.2f}% with standard deviation {std_accuracy:.2f}")
 
     for epoch in epochs_list:
-        val_accuracies = run_cv(trainset, config, epochs=10, learning_rate=0.01)
+        val_accuracies = run_cv(trainset, config, epochs=epoch, learning_rate=0.01, batch_size=64)
         mean_accuracy = float(np.mean(val_accuracies))
         std_accuracy = float(np.std(val_accuracies))
         epoch_accuracies.append(mean_accuracy)
