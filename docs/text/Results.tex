@@ -12,7 +12,7 @@
 \end{figure}
 
 \newpage
-As we can see from Figure \ref{fig:LogRegLearningRate}, the model accuracy increases from the smallest learning rate until we reach 0.001. From there it decreases, which means that the learning rate is to big. The biggest accuracy achieved is about 92\%.
+As we can see from Figure \ref{fig:LogRegLearningRate}, the model accuracy increases from the smallest learning rate up until the largest learning rate. The biggest accuracy achieved is about 91\%.
 
 \begin{figure}[H]
     \centering
@@ -21,7 +21,7 @@ As we can see from Figure \ref{fig:LogRegLearningRate}, the model accuracy incre
     \label{fig:LogRegLearningRate}
 \end{figure}
 
-From Figure \ref{fig:LogRegEpochs} we can see that increasing amount of epochs corresponds to an increase in accuracy. An accuracy of about 92\% was achieved with 25 epochs. It was considered to run more epochs but because of the diminishing returns when epochs increases beyond 15, we decided to save computational resources. 
+From Figure \ref{fig:LogRegEpochs} we can see that number of epochs does not have any effect on accuracy. An accuracy of about 89\% was achieved with all number of epochs. It was considered to run more epochs but because of the diminishing returns when epochs increases we decided to save computational resources. 
 
 \begin{figure}[H]
     \centering
@@ -30,7 +30,7 @@ From Figure \ref{fig:LogRegEpochs} we can see that increasing amount of epochs c
     \label{fig:LogRegEpochs}
 \end{figure}
 
-Moving on to Figure \ref{fig:LogRegBatchsize} we can see that in contrast to number of epochs, the increasing of batch size lowers accuracy. The biggest accuracy was around 92\% when a batch size of 15 was used. It should be noted that the absolute value decrease of around 1\% for both epochs and batch size is not that big. This indicates that these two variables are less important in optimizing for accuracy than learning rate which had a 43\% difference from lowest to biggest. 
+Moving on to Figure \ref{fig:LogRegBatchsize} we can see that in contrast to number of epochs, the increasing of batch size lowers accuracy. The biggest accuracy was around 91\% when a batch size of 15 was used. It should be noted that the absolute value decrease of around 4\% for batch size and 0\% for epochs is not that big. This indicates that these two variables are less important in optimizing for accuracy than learning rate which had a 70\% difference from lowest to biggest. 
 
 \begin{figure}[H]
     \centering
