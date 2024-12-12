@@ -1,13 +1,13 @@
 grid_search: padding_vs_pooling
 save_results: True
-save_plot: True
+save_plot: False
 model_type: cnn
 batch_size: 64
 n_splits: 5
 epochs: 20
 learning_rate: 0.001
 kernel_size: 5 
-filter_number: [32, 64]
+filter_number: [32, 128]
 print_interval: 2000
 seed: 1
 save_path: /results/cnn_grid_search

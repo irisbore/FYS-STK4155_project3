@@ -1,10 +1,10 @@
 grid_search: number_of_conv_layers
-save_results: True
+save_results: False # Done running on Dec 12 
 save_plot: True
 model_type: cnn
 batch_size: 64
 n_splits: 5
-epochs: 20
+epochs: 10
 learning_rate: 0.001
 kernel_size: 5 
 filter_number: [32, 64]

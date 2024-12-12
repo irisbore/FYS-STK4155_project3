@@ -256,6 +256,7 @@ if __name__ == "__main__":
         for padding in padding_list:
             print(padding)
             for pooling in config['pooling']:
+                print(pooling)
                 layer_configs = [
                 {
                     'type':  "conv",
@@ -296,8 +297,8 @@ if __name__ == "__main__":
                 val_accuracies = run_cv(trainset=trainset, config=config, epochs=epochs, learning_rate=learning_rate, layer_configs=layer_configs)
                 mean_accuracy = float(np.mean(val_accuracies))
                 std_accuracy = float(np.std(val_accuracies))
-                cv_accuracy['Padding'].append(mean_accuracy)
-                cv_accuracy['Pooling'].append(std_accuracy)
+                cv_accuracy['Padding'].append(padding)
+                cv_accuracy['Pooling'].append(pooling)
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
     

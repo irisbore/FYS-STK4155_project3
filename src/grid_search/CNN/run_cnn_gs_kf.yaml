@@ -1,14 +1,14 @@
 grid_search: kernel+filter 
 save_results: True
-save_plot: True
+save_plot: False
 model_type: cnn
-filter_number: [[8, 16], [32, 64], [64, 128]] 
+filter_number: [[8, 16], [16, 32], [32, 64]] 
 kernel_size: [3, 5, 7]
 batch_size: 64
 n_splits: 5
-epochs: 20
+epochs: 10
 learning_rate: 0.001 
-print_interval: 2000
+print_interval: 500
 seed: 1
 save_path: /results/cnn_grid_search
 
