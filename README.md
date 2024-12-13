@@ -1,14 +1,16 @@
 # FYS-STK4155_project3    
-    ├── data                            # Placeholder for the MNIST data set that will be downloaded on the local machine when running the source scripts          
+    ├── data                            # Placeholder for the data set (will be downloaded on the local machine when running the source scripts)          
     ├── docs                            # Screenshots of conversations with ChatGPT (and latex code for report)
     ├── results                         # Files with the results of the experiments and/or images of the plotted results. Also a placeholder for a model that is finished training, on local machine
     ├── src                             # Source files for running our experiments 
-    │   ├── utils                       # Scripts containing all functions needed for running our experiments
-    │   ├── models                      # Classes for the two different models
+    │   ├── utils                       # Python files with functions needed for running our experiments
+    │   ├── models                      # One python file for each model class
     │   ├── grid_search
-            ├── CNN                     # Contains one python script for running the grid search for CNN, and one separate yaml file for each of the experiments. See instructions below
-            ├── LogReg                  # Run all experiments by running the python file. Used the provided yaml file as default
-    │   └── ...
+    │   │   ├── CNN                     # Contains one python script for running the grid search for CNN, and one separate yaml file for each of the experiments. See instructions below
+    │   │   └── LogReg                  # Run all experiments by running the python file. Used the provided yaml file as default
+    │   └── evaluation                  # One folder for each model with a script for evaluation and a separate yaml configuration
+    │       ├── CNN                     
+    │       └── LogReg
     └──  requirements.txt               # Python libraries needed for running the code. Install with ´pip -r requirements.txt´
 
 
