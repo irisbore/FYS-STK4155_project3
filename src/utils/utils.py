@@ -14,7 +14,7 @@ import pandas as pd
 import git
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
-pd.options.plotting.backend = "plotly"
+
 
 """
 This script contains functions for retrieving config, as well as various plotting functions
@@ -114,3 +114,4 @@ def plot_parameter_study(param_values, accuracies, param_name, xticks=False):
     plt.tight_layout()
     plt.savefig(f'{PATH_TO_ROOT}/results/logreg/{param_name.lower().replace(" ", "_")}_study.png')
     plt.close()
+
