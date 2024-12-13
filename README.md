@@ -1,7 +1,7 @@
 # FYS-STK4155_project3    
     ├── data                            # Placeholder for the MNIST data set that will be downloaded on the local machine when running the source scripts          
     ├── docs                            # Screenshots of conversations with ChatGPT (and latex code for report)
-    ├── results                         # Yaml-files with the results of the experiments and/or images of the plotted results
+    ├── results                         # Files with the results of the experiments and/or images of the plotted results. Also a placeholder for a model that is finished training, on local machine
     ├── src                             # Source files for running our experiments 
     │   ├── utils                       # Scripts containing all functions needed for running our experiments
     │   ├── models                      # Classes for the two different models

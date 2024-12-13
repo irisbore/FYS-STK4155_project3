@@ -44,7 +44,7 @@ The final layers of a CNN are typically fully connected (dense) layers, which ma
 
 Here, \(z_c\) represents the output score for class \(c\), and \(C\) is the total number of classes.
 
-CNNs are trained using backpropagation, where the loss function, such as cross-entropy in equation \ref{eq:Lossfuntion}, guides the optimization of weights:
+CNNs are trained using backpropagation. The loss function cross-entropy, which we use consistently in all of our experiments \ref{eq:Lossfuntion}, guides the optimization of the weights:
 
 \begin{equation}
     L = -\sum_{i=1}^n \sum_{c=1}^C y_{i,c} \log \hat{y}_{i,c}
@@ -80,7 +80,7 @@ The log-likelihood function is then expressed as in equation \ref{eq:loglikeliho
 \label{eq:loglikelihoodfunction_softmax}
 \end{equation}
 
-The cost function to minimize is the negative log-likelihood, which is equivalent to the cross-entropy loss as shown in equation \ref{eq:cross_entropy_loss}:
+The cost function to minimize in our implementation is the negative log-likelihood, which is equivalent to the cross-entropy loss as shown in equation \ref{eq:cross_entropy_loss}:
 
 \begin{equation}
 C(\boldsymbol{\beta}) = -\ell(\boldsymbol{\beta}) = -\sum_{i=1}^n \sum_{k=0}^{K-1} \mathbb{1}(y_i = k) \log p(y_i = k \vert \boldsymbol{x}_i, \boldsymbol{\beta}).
@@ -99,15 +99,10 @@ where $\mathbf{X}$ is the design matrix with rows $\boldsymbol{x}_i^\mathrm{T}$,
 Parameters are estimated by minimizing $C(\boldsymbol{\beta})$ using iterative methods, such as gradient descent, since there is no closed-form solution for logistic regression coefficients \cite{Hjorth-Jensen_MachineLearning_2023}.
 
 \subsection{Optimization Techniques}
-To explore how we could optimize the performance of the convolutional network, we used pooling (Max Pooling) and dropout.
-\iris{Should we mention kernel and filter here, or move it further up in the cnn section?} 
-\subsubsection{Padding and Pooling:}
-\iris{I moved this nice section from the implementation, but kept the range values.}
-Padding (in convolutional layers) and Pooling are complimentary, increasing and decreasing tensor dimensions respectively. Setting padding ($P$) in a convolutional layer to $\frac {K-1}2$ where $K$ is the kernel size means the output tensor has the same dimensionality (discounting number of channels) as the input tensor, assuming stride $= 1$ (\ref{eq:pooling-dims}). We test $P = 0,\frac {K-1}2$, and Pooling Kernel Size = $0,2$, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
+To explore the optimization the convolutional network performance, we used various techniques described in the following:
 
-\subsubsection{Dropout and Activation functions}
-We performed a grid search with various dropout layers, and the activation functions ReLU and Leaky ReLU (used for all except the last output). ChatGPT-4o suggested using dropout layer after the first two (of three) linear layers, with a range of dropout probabilities between 0.3-0.5, so we  tested the values \{0.3, 0.4, 0.5\} in that configuration \cite{openai2023chatgpt}. \iris{can we find an original source for this?} ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}.
-\subsubsection{Pooling}
+\subsubsection{Padding and Pooling:}
+
 We used Max Pooling, which is used to reduce the dimensionality of an input tensor (usually after a convolutional layer). For a kernel size of $n$, scans $n\times n$ grids and selects the highest values respectively. This grid moves over a number of elements equal to the pooling layer's stride between each such scan, and in our implementation using torch.nn.MaxPool2d(), stride is always equal to kernel size such that these filters never overlap. Pooling modifies the dimensions of the tensor passed through it as shown in equation \ref{eq:pooling-dims}.
 
 \begin{equation}
@@ -118,15 +113,23 @@ We used Max Pooling, which is used to reduce the dimensionality of an input tens
 
 Here $D$ represents the height and width of the input tensor (size = $D\times D \times C$ where $C$ is channels). K, P, and S are the kernel size, padding size, and stride of the pooling layer respectively.
 
-\subsubsection{Dropout}
-Dropout is implemented in our code using torch.nn.Droput2d(). Dropout sets the output of neurons of the preceding layer to zero with a set probability between zero and one. 
+Padding (in convolutional layers) and Pooling are complimentary, increasing and decreasing tensor dimensions respectively. Setting padding ($P$) in a convolutional layer to $\frac {K-1}2$ where $K$ is the kernel size means the output tensor has the same dimensionality (discounting number of channels) as the input tensor, assuming stride $= 1$ (\ref{eq:pooling-dims}). We test $P = 0,\frac {K-1}2$, and Pooling Kernel Size = $0,2$, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
 
+\subsubsection{Dropout and Activation functions}
+We performed a grid search with various dropout layers, and the activation functions ReLU and Leaky ReLU (used for all except the last output) as ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}. Dropout is implemented in our code using torch.nn.Dropout(). Dropout sets the output of neurons of the preceding layer to zero with a set probability between zero and one. We tested the use of dropout after the first two (of three) linear layers, with probabilities \{0.3, 0.4, 0.5\} (same for both) in, as is similar to one of Raschka's implementations \cite[p. 478]{raschka2022machine}.
+
+
+\subsubsection{Kernel size and number of filters}
+
+We conducted a grid search with kernel sizes $K = {3, 5, 7}$ and filter counts $F = {8, 16, 32, 64}$. Kernel size determines the spatial extent of the receptive field, controlling how much of the input image each convolution operation captures. Smaller kernel sizes, such as $3\times3$, allow for precise feature extraction and can be stacked to achieve a larger effective receptive field. In contrast, larger kernel sizes, such as $5\times5$ and $7\times7$, capture broader features but may lead to higher computational costs and increased risk of overfitting.
+
+The number of filters $F$ defines the depth of the output tensor, which determines the model's ability to learn diverse features. Increasing the number of filters enhances the network's capacity to capture complex patterns but also raises computational requirements and the potential for overfitting.
 
 \subsection{Validation and Evaluation techniques}
 
 \subsubsection{Cross-Validation with K-Folds}
 
-To assess the models' generalization capability and to avoid overfitting, we employed $K$-fold cross-validation with $K = 5$. In this method, the training data is partitioned into K subsets (folds). The model was trained on $k-1$ folds and validated on the remaining fold. This process was repeated $k$ times, each time with a different fold used for validation. The cross-validation procedure provides an average performance metric, which is more reliable than a single train-test split. The accuracy score were calculated for each fold and then averaged to obtain the final performance metrics. The algorithm is presented with pseudocode in Algorithm 1. \iris{See if we can cite Hastie here (ESL)}
+To assess the models' generalization capability and to avoid overfitting, we employed $K$-fold cross-validation with $K = 5$. In this method, the training data is partitioned into K subsets (folds). The model was trained on $k-1$ folds and validated on the remaining fold. This process was repeated $k$ times, each time with a different fold used for validation. The cross-validation procedure provides an average performance metric, which is more reliable than a single train-test split. The accuracy score were calculated for each fold and then averaged to obtain the final performance metrics. The algorithm is presented with pseudocode in Algorithm 1.
 
 
 \begin{figure}[H]
@@ -153,22 +156,19 @@ To assess the models' generalization capability and to avoid overfitting, we emp
 
 \subsubsection{Bootstrapping}
 
-In addition to cross-validation, bootstrapping was used to estimate the accuracy and stability of our statistical estimates. Bootstrapping involves repeatedly resampling the training data with replacement to create multiple bootstrap samples B. For each bootstrap sample b, the model is trained, and performance metrics are calculated on the out-of-bag (OOB) samples—data points not included in the bootstrap sample. This method allows us to estimate the sampling distribution of the estimator and to compute confidence intervals for the model parameters. The bootstrap algorithm is presented with pseudocode in Algorithm 2. \iris{This is not how we use it currently, will get back to this after answer from Morten}
+In addition to cross-validation, bootstrapping was used to estimate the accuracy and stability of our final model evaluation. Our bootstrapped implementation repeatedly resampled the test data with replacement to create multiple bootstrap samples B. For each bootstrap sample B, we evaluated model performance. This method allows us to compute confidence intervals for the model performance. After running the boostrap algortihm, we constructed a 95 \% confidence interval by taking the 2.5th and 97.5th percentiles of the bootstrap estimates. The bootstrap algorithm is presented with pseudocode in Algorithm 2. \cite{hastie2009elements}
 
 \begin{figure}[H]
     \begin{algorithm}[H]
-    \caption{Bootstrap Algorithm \cite{openai2023chatgpt}}
+    \caption{Bootstrap Algorithm}
     \label{algo:bootstrap}
         \begin{algorithmic}[1]
             \Procedure{Bootstrapping}{$B$, model, data}
             \For{$b = 1$ to $B$}
-                \State $\mathcal{D}^{(b)}_{\text{train}} \gets$ Sample $n$ data points from $\mathcal{D}$ with replacement
-                \State $\mathcal{D}^{(b)}_{\text{test}} \gets \mathcal{D} \setminus \mathcal{D}^{(b)}_{\text{train}}$ \Comment{Out-of-bag (OOB) samples}
-                \State Fit the model on $\mathcal{D}^{(b)}_{\text{train}}$
-                \State Evaluate the model on $\mathcal{D}^{(b)}_{\text{test}}$ and record the performance metric
-                \State Save model parameters $\boldsymbol{\beta}^{(b)}$
+                \State $\mathcal{D}^{(b)}_{\text{test}} \gets$ Sample $n$ data points from $\mathcal{D}$ with replacement
+                \State Evaluate the model on $\mathcal{D}^{(b)}_{\text{test}}$ and record the estimated accuracy
             \EndFor
-            \State Compute the error, bias and variance
+            \State Construct confidence intervals by taking the percentiles of the boostraped estimates.
             \EndProcedure
         \end{algorithmic}
     \end{algorithm}
@@ -182,7 +182,19 @@ The CNN class was implemented using the \texttt{PyTorch} library \cite{Paszke201
 The logistic regression was also implemented using the \texttt{PyTorch} library. The original inspiration on how to set up Logistic Regression were found with help from Antropic's Claude 3.5 Sonnet AI model \cite{anthropic_claude_3_5_sonnet}. The code was however modified as we saw we could use the same structure as our CNN model. Based on initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in range from 16 to 256 and epochs in range from 5 to 25. 
 \\
 \\
-The following steps summarize the implementation process of our experiment, with the initial values for the CNN presented in Table \ref{tb:initialvalues}:
+The following steps summarize the implementation process of our experiment, with the initial values for LogReg presented in Table \ref{tb:loginitial} and for CNN presented in Table \ref{tb:initialvalues}:
+
+\begin{table}[H]
+ \centering
+    \caption{Table with inital values for LogReg before hyper parameter tuning.}
+\begin{tabular}{|l|l|l|l|l|}
+\hline
+                        & \textbf{Optimizer} & \textbf{Learning Rate}    & \textbf{Batch Size} & \textbf{Epochs} \\ \hline
+\textbf{Initial Values} & SGD                & Best of first grid search & 64                  & 10              \\ \hline
+\end{tabular}
+\label{tb:loginitial}
+\end{table}
+
 \begin{table}[H]
     \centering
     \caption{Table with inital values for CNN before hyper parameter tuning, adapted from Raschka \cite{raschka2022machine}}
@@ -195,28 +207,20 @@ The following steps summarize the implementation process of our experiment, with
 \label{tb:initialvalues}
 \end{table}
 
-\begin{table}[]
-\begin{tabular}{|l|l|l|l|l|l|l|l|}
-\hline
-                       & \textbf{Epochs} & \textbf{Batch Size} & \textbf{Learning Rate} & \textbf{Optimizer} & \textbf{Loss}        & \textbf{Kernel size} & \textbf{Filter Numbers} \\ \hline
-\textbf{Inital values} & 10              & 64                  & 0.001                  & Adam               & Binary Cross-Entropy & 5                    & (32, 64)                \\ \hline
-\end{tabular}
-\end{table}
-
 \begin{enumerate}
     \item \textbf{Data Loading and Splitting:} Load the MNIST data set and split it into train and test sets using     \texttt{torchvision.datasets}. 
-    \item \textbf{Baseline model}: Tune our Logistic Regression model using cross-validation.
+    \item \textbf{Baseline model}: We use stochastic gradient decent as optimizer and negative log-likelihood for Logistic Regression.Tune our Logistic Regression model using cross-validation.
     \item \textbf{Tune CNN}: Grid search the hyperparameters of our CNN in the following order, using cross-validation:
     \begin{enumerate}
         \item \textbf{Number of Linear and Convolutional Layers} Test one convolutional layer followed by two linear layers against two convolutional layer followed by three linear layers.
         \item \textbf{Kernel Size and Number of Filters}
         We test Kernel Size: \{3, 5, 7\} and Number of Filters: \{(8,16), (16, 32), (32,64)\}.
         \item \textbf{Pooling and Padding}
-        We test $P = \{0,\frac {K-1}2\}$, and Pooling Kernel Size: \{0,2\}, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
+        We test $P = \{0,\frac {K-1}2\}$, and Pooling Kernel Size: \{0,2\}.
         \item \textbf{Dropout rates and Activation Functions}
-        We  tested the drop out rates \{0.3, 0.4, 0.5\} in that configuration \cite{openai2023chatgpt}. \iris{can we find an original source for this?} We test Activation Functions: \{ReLU, Leaky ReLU\} as ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}.
+        We tested the drop out rates \{0.3, 0.4, 0.5\} in that configuration. We test Activation Functions: \{ReLU, Leaky ReLU\}.
     \end{enumerate}
-    \item \textbf{Model Training:} Train CNNs and Logistic Regression on the training data with their respective validated hyper parameters. We use stochastic gradient decent as optimizer for Logistic regression.
+    \item \textbf{Model Training:} Train CNNs and Logistic Regression on the training data with their respective validated hyper parameters. 
     \item \textbf{Testing:} Assess the final model performance on the test set. 
 \end{enumerate}
 
@@ -235,7 +239,7 @@ To ensure the reproducibility of our computational experiments, we have taken th
     \item Use a well known public data set with published benchmarked accuracies
     \item Present all final model parameters, as long as values tested during tuning of hyper parameters
     \item Use config files for the hyper parameters to make sure we were consistent across different scripts and make our code more readable
-    \item Seeded everything with seed from config
+    \item Seeded everything initally with seed from a separate config file.
     \item Validated our tuning process with cross-validation, where we vary the seeds across different runs. 
     \item Used bootstrapped uncertainty measures for final model, where we vary the seeds across different runs. 
 \end{itemize}
@@ -250,4 +254,4 @@ We have been encouraged in the group sessions to use ChatGPT \cite{openai2023cha
 
 \subsection{Other Tools}
 
-We used the software Overleaf to write this report. To create the dataset along with doing basic mathematical operations we used the NumPy package \cite{harris2020numpy}. Plotting our results was done with the Matplotlib package \cite{hunter-2007matplotlib}. The code for the project can be found at: \url{https://github.com/irisbore/FYS-STK4155_project3.git}.
+We used the software Overleaf to write this report. To do basic mathematical operations we used the NumPy package \cite{harris2020numpy}. Plotting our results was done with the Matplotlib package \cite{hunter-2007matplotlib}. The code for the project can be found at: \url{https://github.com/irisbore/FYS-STK4155_project3.git}.
