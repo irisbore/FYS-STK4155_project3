@@ -4,7 +4,7 @@ model_type: cnn
 learning_rate: 0.001
 batch_size: 64
 print_interval: 1000
-epochs: 20
+epochs: 10
 layer_configs:
   - type: "conv"
     in_channels: 1

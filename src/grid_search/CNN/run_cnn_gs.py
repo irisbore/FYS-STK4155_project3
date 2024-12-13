@@ -1,4 +1,5 @@
 import sys
+import time 
 from tqdm import tqdm
 import numpy as np
 import seaborn as sns
@@ -203,6 +204,7 @@ if __name__ == "__main__":
         }
         for padding in padding_list:
             for pooling in config['pooling']:
+                start_time = time.perf_counter()
                 layer_configs = [
                 {
                     'type':  "conv",
@@ -249,6 +251,12 @@ if __name__ == "__main__":
                 cv_accuracy['Pooling'].append(pooling)
                 cv_accuracy['CV Accuracy'].append(mean_accuracy)
                 cv_accuracy['CV Accuracy Std'].append(std_accuracy)
+                end_time = time.perf_counter()
+                used_time = end_time - start_time
+                minutes = used_time // 60
+                seconds = used_time % 60
+                print(f"Running time for padding: {padding} and pooling: {pooling} is:{int(minutes)} minutes {seconds:.2f} seconds")
+
 
     #---------------------------------------------------------------------------------------------------------------------------------------------#
     # FOURTH GRID SEARCH: 

@@ -14,6 +14,7 @@ import pandas as pd
 import git
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
+pd.options.plotting.backend = "plotly"
 
 
 def get_config(path) -> Dict:
@@ -82,15 +83,16 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
     else:
         plt.show()
 
-def plot_classwise(df, title, save_plot, filename):
-    plt.clf()
-    sns.heatmap(df, annot=True, fmt='.3g')
-    plt.title(title)
-    plt.tight_layout()
-    if save_plot:
-        plt.savefig(PATH_TO_ROOT+'results/cnn_eval/'+filename)
-    else:
-        plt.show()
+# def plot_classwise(df, title, save_plot, filename):
+#     plt.clf()
+#     #sns.heatmap(df, annot=True, fmt='.3g') 
+#     df.plot(x=df.)
+#     plt.title(title)
+#     plt.tight_layout()
+#     if save_plot:
+#         plt.savefig(PATH_TO_ROOT+'results/cnn_eval/'+filename)
+#     else:
+#         plt.show()
 
 def plot_parameter_study(param_values, accuracies, param_name, xticks=False):
     plt.figure(figsize=(10, 6))

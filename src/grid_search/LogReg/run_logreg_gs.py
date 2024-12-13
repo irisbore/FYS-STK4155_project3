@@ -33,7 +33,6 @@ if __name__ == "__main__":
         tv.transforms.ToTensor()
     ])
     trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=True, download=True, transform=transform)
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=False,transform=transform, download=False) 
 
 
     # Get parameter lists from config
