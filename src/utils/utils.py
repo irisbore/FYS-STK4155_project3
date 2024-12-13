@@ -91,12 +91,16 @@ def plot_classwise(df, title, save_plot, filename):
         plt.savefig(PATH_TO_ROOT+'results/cnn_eval/'+filename)
     else:
         plt.show()
-def plot_parameter_study(param_values, accuracies, param_name):
+
+def plot_parameter_study(param_values, accuracies, param_name, xticks=False):
     plt.figure(figsize=(10, 6))
     plt.plot(param_values, accuracies, 'bo-')
     plt.xlabel(param_name)
+    if xticks: 
+        plt.xticks(param_values)
     plt.ylabel('CV Accuracy (%)')
     plt.title(f'Impact of {param_name} on Model Accuracy')
     plt.grid(True)
+    plt.tight_layout()
     plt.savefig(f'{PATH_TO_ROOT}/results/logreg/{param_name.lower().replace(" ", "_")}_study.png')
     plt.close()

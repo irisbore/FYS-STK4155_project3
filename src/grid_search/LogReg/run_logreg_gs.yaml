@@ -1,8 +1,14 @@
 seed: 1
 model_type: logreg
-batch_size: 64
+
 n_splits: 5
 print_interval: 2000
+
+# Fixed values 
+fixed_lr: 0.1 # The best value from searching learning rates
+fixed_batch_size: 64 # The initial batch size (and best)
+fixed_epochs: 10
+
 # Learning rate values to test
 learning_rates: [0.00001,0.0001,0.001, 0.01, 0.1]
 

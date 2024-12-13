@@ -17,11 +17,11 @@ class LogisticRegression(nn.Module):
         # Apply softmax to get probabilities
         return F.log_softmax(logits, dim=1)
     
-    def predict(self, x):
-        with torch.no_grad():
-            # Get the predicted class (digit)
-            return self.forward(x).argmax(dim=1)
+    # def predict(self, x):
+    #     with torch.no_grad():
+    #         # Get the predicted class (digit)
+    #         return self.forward(x).argmax(dim=1)
     
-    def accuracy(self, x, y):
-        predictions = self.predict(x)
-        return (predictions == y).float().mean()
+    # def accuracy(self, x, y):
+    #     predictions = self.predict(x)
+    #     return (predictions == y).float().mean()

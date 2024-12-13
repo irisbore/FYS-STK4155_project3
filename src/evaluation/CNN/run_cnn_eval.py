@@ -4,6 +4,7 @@ import sys
 import torch
 from torch.utils.data import DataLoader
 import torchvision
+import numpy as np
 import git
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
@@ -59,11 +60,11 @@ if __name__=="__main__":
         score_df = model_utils.test_model_classwise(testloader, model, classes)
         utils.plot_classwise(score_df)
 
-        # total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
-        # lower_bound = np.percentile(total_accuracies, 2.5)
-        # upper_bound = np.percentile(total_accuracies, 97.5)
-        # mean_accuracy = np.mean(total_accuracies)
-        # print(lower_bound, mean_accuracy, upper_bound)
+        total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
+        lower_bound = np.percentile(total_accuracies, 2.5)
+        upper_bound = np.percentile(total_accuracies, 97.5)
+        mean_accuracy = np.mean(total_accuracies)
+        print(lower_bound, mean_accuracy, upper_bound)
         # fig, ax = plt.subplots()
         # print(len(total_accuracies))
         # sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
