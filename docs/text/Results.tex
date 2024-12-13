@@ -85,9 +85,9 @@ In \ref{table:runtimes_pp} we see that the addition of padding increases runtime
     \label{fig:cnn_pp}
 \end{figure}
 
-\subsection{Results: Final assessment}
+\subsection{Results: Final Assessment}
 
-When looking at Figure \ref{fig:ClasswiseAccuracyLogReg} we can see that the Logistic Regression preforms variably depending on what class of number that is predicted. The performance difference between 8 as the lowest and 0 as the highest is 12\%. The variablility is probably due to chance, as Logistic regression should be better at binary classification, such that the multivariable classification becomes to complex for this model to handle. The average performance among all classes is 92\%.
+Figure \ref{fig:ClasswiseAccuracyLogReg} shows that the Logistic Regression performs variably depending on what class of number that is predicted. The performance difference between class 8 as the lowest and class 0 as the highest is 12\%. The variablility is probably due to the fact that Logistic regression should be better at binary classification, such that the multivariable classification becomes to complex for this model to handle. The average performance among all classes is 92\%.
 
 \begin{figure}[H]
     \centering
@@ -104,14 +104,15 @@ In contrast, when looking at Figure \ref{fig:ClasswiseAccuracyCNN} we can see th
     \caption{Our best CNNs performance on each class of number in the MNIST dataset.}
     \label{fig:ClasswiseAccuracyCNN}
 \end{figure}
-
+\newpage
 Further, we compute boostrapped accuracy for both models:
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{results/evaluation/CNN_classwise_acc.png}
-    \caption{Our best CNNs performance on each class of number in the MNIST dataset.}
+    \includegraphics[width=\linewidth]{results/evaluation/cnn_confidence.png}
+    \caption{The distribution of our best CNNs performance on the boostrapped MNIST dataset, with 1000 boostraps.}
     \label{fig:ClasswiseAccuracyCNN}
 \end{figure}
+
 \newpage
 \subsection{Discussion of Performance}
 The baseline vs CNN both reaches 90 \% without an extensive tuning of the baseline, which calls for the question if using convolutional neural networks are worth the trouble of runtime and reduced interpretability. However, in some applications of a model trained on the MNIST data set, such
