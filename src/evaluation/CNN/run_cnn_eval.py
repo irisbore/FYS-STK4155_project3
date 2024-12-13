@@ -23,24 +23,26 @@ if __name__=="__main__":
         torch.manual_seed(config["seed"])
         batch_size = config["batch_size"]
         print_interval = config["print_interval"]
-
+        save_plot = config['save_plot']
+        download_data = config['download_data']
         transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor()
         ])
-        trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=False, transform=transform)
-        testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,download=False, transform=transform) 
+        trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=download_data, transform=transform) 
+        testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,download=download_data, transform=transform) 
 
         layer_configs=config['layer_configs']
         dummynet = ConvNet(layer_configs)
         layer_configs[2]['in_features'] = dummynet.get_flattened_size()
         
-        # If you have not yet trained final model
-        #trainloader = DataLoader(trainset, batch_size=batch_size)
-        #model = model_utils.train_model(trainloader, config, layer_configs=layer_configs)
-
         PATH = PATH_TO_ROOT+'/results/saved_models/mnist_net.pth'
-        #torch.save(model.state_dict(), PATH)
 
+        # If you already run this script once you can comment out the following
+        #-------------------------------------------------------------------------------------------------------#
+        # trainloader = DataLoader(trainset, batch_size=batch_size)
+        # model = model_utils.train_model(trainloader, config, layer_configs=layer_configs)
+        # torch.save(model.state_dict(), PATH)
+        #-------------------------------------------------------------------------------------------------------#
         model = ConvNet(layer_configs)
         model.load_state_dict(torch.load(PATH, weights_only=True))
 
