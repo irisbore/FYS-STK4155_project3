@@ -194,7 +194,7 @@ if __name__ == "__main__":
         epochs = config["epochs"]
         filter_number = config["filter_number"]
         kernel_size = config["kernel_size"]
-        padding_list = [0, (kernel_size-1)/2]
+        padding_list = [0, int((kernel_size-1)/2)]
         cv_accuracy = {
         'Padding': [],
         'Pooling' : [],
@@ -202,9 +202,7 @@ if __name__ == "__main__":
         'CV Accuracy Std': []
         }
         for padding in padding_list:
-            print(padding)
             for pooling in config['pooling']:
-                print(pooling)
                 layer_configs = [
                 {
                     'type':  "conv",
@@ -212,7 +210,8 @@ if __name__ == "__main__":
                     'out_channels': filter_number[0],
                     'kernel_size': kernel_size,
                     'activation': "ReLU",
-                    'pooling': pooling
+                    'pooling': pooling,
+                    'padding': padding
                 },
                 {
                     'type':  "conv",
@@ -220,7 +219,8 @@ if __name__ == "__main__":
                     'out_channels': filter_number[1],
                     'kernel_size': kernel_size,
                     'activation': "ReLU",
-                    'pooling': pooling
+                    'pooling': pooling,
+                    'padding': padding
                 },
                 {
                     'type':  "linear",
