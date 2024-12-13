@@ -30,6 +30,7 @@ if __name__=="__main__":
         ])
         trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=download_data, transform=transform) 
         testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,download=download_data, transform=transform) 
+        trainloader = DataLoader(trainset, batch_size=batch_size)
 
         layer_configs=config['layer_configs']
         dummynet = ConvNet(layer_configs)
@@ -39,14 +40,17 @@ if __name__=="__main__":
 
         # If you already run this script once you can comment out the following
         #-------------------------------------------------------------------------------------------------------#
-        # trainloader = DataLoader(trainset, batch_size=batch_size)
-        # model = model_utils.train_model(trainloader, config, layer_configs=layer_configs)
-        # torch.save(model.state_dict(), PATH)
+        model = model_utils.train_model(trainloader, config, layer_configs=layer_configs)
+        torch.save(model.state_dict(), PATH)
         #-------------------------------------------------------------------------------------------------------#
         model = ConvNet(layer_configs)
         model.load_state_dict(torch.load(PATH, weights_only=True))
 
         # Model evaluation
+        # For reference
+        accuracy = model_utils.test_model(trainloader, model)
+        print(f'Accuracy on training set is {accuracy}%')
+
         testloader = DataLoader(testset, batch_size=batch_size)
         accuracy = model_utils.test_model(testloader, model)
         print(f'Accuracy on test set is {accuracy}%')
