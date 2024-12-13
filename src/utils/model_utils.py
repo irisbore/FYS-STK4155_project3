@@ -7,6 +7,8 @@ import torch.optim
 from torch.utils.data import DataLoader
 import git 
 import yaml
+import pandas as pd
+import numpy as np
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -73,7 +75,7 @@ def test_model(testloader, model):         # Test on data set
 
 def test_model_classwise(testloader, model, classes):
      # prepare to count predictions for each class
-    score_df = {classname: 0 for classname in classes}
+    score_dict = {classname: 0 for classname in classes}
     correct_pred = {classname: 0 for classname in classes}
     total_pred = {classname: 0 for classname in classes}
 
@@ -94,5 +96,5 @@ def test_model_classwise(testloader, model, classes):
     for classname, correct_count in correct_pred.items():
         accuracy = 100 * float(correct_count) / total_pred[classname]
         print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
-        score_df[classname] = accuracy
-    return score_df
+        score_dict[classname] = np.round(accuracy, decimals=1)
+    return score_dict

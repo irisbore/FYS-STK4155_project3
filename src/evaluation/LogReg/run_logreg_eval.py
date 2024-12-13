@@ -14,9 +14,10 @@ from src.models.CNN import ConvNet
 
 if __name__=="__main__":
         config_path = utils.get_config_path(
-        default_path=PATH_TO_ROOT + "/src/evaluation/CNN/run_logreg_eval.yaml"
+        default_path=PATH_TO_ROOT + "/src/evaluation/LogReg/run_logreg_eval.yaml"
         )
         config = utils.get_config(config_path)
+        save_plot = config['save_plot']
         torch.manual_seed(config["seed"])
         batch_size = config["batch_size"]
         print_interval = config["print_interval"]
@@ -37,17 +38,15 @@ if __name__=="__main__":
         print(f'Accuracy on test set without boostrap is {accuracy}%')
 
         classes = testset.classes
-        ## TODO : run this below 
-
-        score_df = model_utils.test_model_classwise(testloader, model, classes)
-        utils.plot_classwise(score_df)
+        score_dict = model_utils.test_model_classwise(testloader, model, classes)
+        utils.plot_classwise(score_dict, model="LogReg", save_plot=save_plot)
 
         # Boostrapped model evaluation
-        total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
-        lower_bound = np.percentile(total_accuracies, 2.5)
-        upper_bound = np.percentile(total_accuracies, 97.5)
-        mean_accuracy = np.mean(total_accuracies)
-        print(lower_bound, mean_accuracy, upper_bound)
+        # total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
+        # lower_bound = np.percentile(total_accuracies, 2.5)
+        # upper_bound = np.percentile(total_accuracies, 97.5)
+        # mean_accuracy = np.mean(total_accuracies)
+        # print(lower_bound, mean_accuracy, upper_bound)
         # fig, ax = plt.subplots()
         # print(len(total_accuracies))
         # sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)

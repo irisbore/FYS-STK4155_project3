@@ -16,6 +16,9 @@ PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 pd.options.plotting.backend = "plotly"
 
+"""
+This script contains functions for retrieving config, as well as various plotting functions
+"""
 
 def get_config(path) -> Dict:
     """
@@ -83,16 +86,20 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
     else:
         plt.show()
 
-# def plot_classwise(df, title, save_plot, filename):
-#     plt.clf()
-#     #sns.heatmap(df, annot=True, fmt='.3g') 
-#     df.plot(x=df.)
-#     plt.title(title)
-#     plt.tight_layout()
-#     if save_plot:
-#         plt.savefig(PATH_TO_ROOT+'results/cnn_eval/'+filename)
-#     else:
-#         plt.show()
+def plot_classwise(score_dict: dict, model: str, save_plot:bool):
+    labels = list(score_dict.keys())
+    values = list(score_dict.values())
+    plt.figure(figsize=(10, 6))
+    plt.plot(labels, values, marker='o', linestyle='-', color='b', markersize=8)
+    plt.xlabel('Class', fontsize=14)
+    plt.ylabel('Accuracy', fontsize=14)
+    plt.title(f'Classwise Accuracy on Testset for {model}', fontsize=16)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    if save_plot: 
+        plt.savefig(f'{PATH_TO_ROOT}/results/evaluation/{model}_classwise_acc.png')
+    else:
+        plt.show()
 
 def plot_parameter_study(param_values, accuracies, param_name, xticks=False):
     plt.figure(figsize=(10, 6))

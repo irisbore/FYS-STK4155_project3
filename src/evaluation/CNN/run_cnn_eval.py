@@ -7,6 +7,7 @@ import numpy as np
 import git
 import seaborn as sns
 import matplotlib.pyplot as plt
+import pandas as pd
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -48,22 +49,25 @@ if __name__=="__main__":
         accuracy = model_utils.test_model(testloader, model)
         print(f'Accuracy on test set is {accuracy}%')
         classes = testset.classes
-        ## TODO : run this below 
 
-        score_df = model_utils.test_model_classwise(testloader, model, classes)
-        utils.plot_classwise(score_df)
+        ## TODO : run this below 
+        score_dict = model_utils.test_model_classwise(testloader, model, classes)
+        utils.plot_classwise(score_dict=score_dict, model="CNN", save_plot=True)
+
+        #print(score_df)
+        #utils.plot_classwise(score_df)
 
         # Boostrapped model evaluation
-        total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
-        lower_bound = np.percentile(total_accuracies, 2.5)
-        upper_bound = np.percentile(total_accuracies, 97.5)
-        mean_accuracy = np.mean(total_accuracies)
-        print(lower_bound, mean_accuracy, upper_bound)
-        fig, ax = plt.subplots()
-        print(len(total_accuracies))
-        sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
-        plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound, mean_accuracy, upper_bound}] ")
-        plt.show()
+        # total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
+        # lower_bound = np.percentile(total_accuracies, 2.5)
+        # upper_bound = np.percentile(total_accuracies, 97.5)
+        # mean_accuracy = np.mean(total_accuracies)
+        # print(lower_bound, mean_accuracy, upper_bound)
+        # fig, ax = plt.subplots()
+        # print(len(total_accuracies))
+        # sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
+        # plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound, mean_accuracy, upper_bound}] ")
+        # plt.show()
 
 
         

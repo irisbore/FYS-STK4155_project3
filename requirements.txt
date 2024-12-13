@@ -5,3 +5,4 @@ git-python==1.0.3
 pandas==2.2.3
 pillow==11.0.0
 seaborn==0.13.2
+plotly==5.24.1
