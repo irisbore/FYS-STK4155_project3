@@ -1,16 +1,21 @@
 \subsection{Results: Grid search on CNN}
 
-\subsubsection{Number of Linear Layers and Nodes}
-
-
+\subsubsection{Number of Linear Layers and Convolutional Layers}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
+    \caption{CNN grid search comparing a model with one convolutional layer followed by two linear layers against a model with two convolutional layers followed by three linear layers}
+    \label{fig:LogRegEpochs}
+\end{figure}
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
-    \caption{CNN gridsearch for 3 different values of kernel size and filter size. Learning rate is 0.001.}
+    \caption{CNN grid search comparing a model with one convolutional layer followed by two linear layers against a model with two convolutional layers followed by three linear layers}
     \label{fig:LogRegEpochs}
 \end{figure}
 
+\subsubsection{Kernel Size and Number of Filters}
 \newpage
 As we can see from Figure \ref{fig:LogRegLearningRate}, the model accuracy increases from the smallest learning rate up until the largest learning rate. The biggest accuracy achieved is about 91\%.
 
