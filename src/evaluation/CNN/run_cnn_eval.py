@@ -58,8 +58,8 @@ if __name__=="__main__":
 
         score_df = model_utils.test_model_classwise(testloader, model, classes)
         utils.plot_classwise(score_df)
-        
-        # total_accuracies = bootstrap.bootstrap_test_set(testset, model)
+
+        # total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
         # lower_bound = np.percentile(total_accuracies, 2.5)
         # upper_bound = np.percentile(total_accuracies, 97.5)
         # mean_accuracy = np.mean(total_accuracies)
