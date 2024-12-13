@@ -50,24 +50,18 @@ if __name__=="__main__":
         print(f'Accuracy on test set is {accuracy}%')
         classes = testset.classes
 
-        ## TODO : run this below 
         score_dict = model_utils.test_model_classwise(testloader, model, classes)
         utils.plot_classwise(score_dict=score_dict, model="CNN", save_plot=True)
 
-        #print(score_df)
-        #utils.plot_classwise(score_df)
-
         # Boostrapped model evaluation
-        # total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
-        # lower_bound = np.percentile(total_accuracies, 2.5)
-        # upper_bound = np.percentile(total_accuracies, 97.5)
-        # mean_accuracy = np.mean(total_accuracies)
-        # print(lower_bound, mean_accuracy, upper_bound)
-        # fig, ax = plt.subplots()
-        # print(len(total_accuracies))
-        # sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
-        # plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound, mean_accuracy, upper_bound}] ")
-        # plt.show()
+        total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
+        lower_bound = float(np.percentile(total_accuracies, 2.5))
+        upper_bound = float(np.percentile(total_accuracies, 97.5))
+        mean_accuracy = float(np.mean(total_accuracies))
+        fig, ax = plt.subplots()
+        sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
+        plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound, upper_bound}] ")
+        plt.savefig(f'{PATH_TO_ROOT}/results/evaluation/cnn_confidence.png')
 
 
         

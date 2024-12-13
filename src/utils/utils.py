@@ -95,6 +95,7 @@ def plot_classwise(score_dict: dict, model: str, save_plot:bool):
     plt.ylabel('Accuracy', fontsize=14)
     plt.title(f'Classwise Accuracy on Testset for {model}', fontsize=16)
     plt.xticks(rotation=45)
+    plt.grid(True)
     plt.tight_layout()
     if save_plot: 
         plt.savefig(f'{PATH_TO_ROOT}/results/evaluation/{model}_classwise_acc.png')

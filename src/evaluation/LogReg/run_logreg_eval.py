@@ -5,6 +5,8 @@ from torch.utils.data import DataLoader
 import torchvision
 import numpy as np
 import git
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -42,15 +44,13 @@ if __name__=="__main__":
         utils.plot_classwise(score_dict, model="LogReg", save_plot=save_plot)
 
         # Boostrapped model evaluation
-        # total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
-        # lower_bound = np.percentile(total_accuracies, 2.5)
-        # upper_bound = np.percentile(total_accuracies, 97.5)
-        # mean_accuracy = np.mean(total_accuracies)
-        # print(lower_bound, mean_accuracy, upper_bound)
-        # fig, ax = plt.subplots()
-        # print(len(total_accuracies))
-        # sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
-        # plt.title("Accuracy on test set")
-        # plt.show()
+        total_accuracies = bootstrap.bootstrap_test_set(testset, model, config)
+        lower_bound = float(np.percentile(total_accuracies, 2.5))
+        upper_bound = float(np.percentile(total_accuracies, 97.5))
+        mean_accuracy = float(np.mean(total_accuracies))
+        fig, ax = plt.subplots()
+        sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
+        plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound, upper_bound}] ")
+        plt.savefig(f'{PATH_TO_ROOT}/results/evaluation/logreg_confidence.png')
 
 
