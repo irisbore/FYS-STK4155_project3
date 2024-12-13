@@ -4,7 +4,7 @@ For logistic regression we see that learning rate, number of epochs and batch si
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/logreg/learning_rate_study.png}
-    \caption{Logistic regression classification with learningrates in the range from $10^{-5}$ to $10^0$. The biggest accuracy is 91\% achieved with learning rate 0.1. }
+    \caption{Logistic regression classification with learningrates in the range from $10^{-5}$ to $10^{-1}s$. The biggest accuracy is 91\% achieved with learning rate 0.1. }
     \label{fig:LogRegLearningRate}
 \end{figure}
 
@@ -51,36 +51,42 @@ Our results testing different kernel sizes and number of filters in each convolu
 
 \newpage
 \subsubsection{Pooling and Padding}
-\iris{THESE RESULTS NEED TESTING}
-Pooling is good. Increased runtime significantly to not have it.
-We continued with pooling. 
+Our grid search with pooling and convolutional layer 
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_pp.png}
-    \caption{Results of a a grid search experimenting with adding padding and pooling after the convolutional layers \iris{is this correct?}}
+    \caption{Heatmap reasults of Pooling and Padding grid search with two convolutional layers followed by three linear layers. The Y-axis represents pooling kernel size (0 means no pooling), with pooling layers placed after each convolutional layer, and the X-axis represents the convolutional layers' padding.}
     \label{fig:cnn_pp}
 \end{figure}
+
+\begin{table}[H]
+    \centering
+    \caption{The runtimes of a a grid search experimenting with adding padding and pooling after the convolutional layers \iris{is this correct?}}
+\begin{tabular}{|l|l|l|}
+\hline
+                    & \textbf{No Padding}      & \textbf{Padding: 2}      \\ \hline
+\textbf{No Pooling} & 30 minutes 49.83 seconds & 57 minutes 28.26 seconds \\ \hline
+\textbf{Pooling: 2} & 8 minutes 42.44 seconds  & 19 minutes 28.03 seconds \\ \hline
+\end{tabular}
+\end{table}
 
 \newpage
 \subsubsection{Dropout Rates and Activation Functions}
- As we can see from Figure \ref{fig:cnn_pp} the accuracy does not change much depending on dropout rate and activation functions. When running the code for 10 epochs, we got 98\% accuracy for all four combinations. We suspected our model structure and training time was too simple/short to get an effect of the dropout rate, due to our model not being prone to overfit. When increasing the number of epochs to 20, we got the same accuracy of 98.2\% for LeakyRelu and Dropout rate 0.5. This is the same performance as our previous implementation with 10 epochs and no dropout. In line with our selection criterion, we decided to go keep our implementation with 10 epochs and no dropout layer, with Relu as the activation function. 
+ Figure \ref{fig:cnn_pp} shows that the accuracy does not change much depending on dropout rate and activation functions. When running the code for 10 epochs, we got 98\% accuracy for all four combinations. We suspected our model structure and training time was too simple/short to get an effect of the dropout rate, due to our model not being prone to overfit. When increasing the number of epochs to 20, we got the same accuracy of 98.2\% for LeakyRelu and Dropout rate 0.5. This is the same performance as our previous implementation with 10 epochs and no dropout. In line with our selection criterion, we decided to go keep our implementation with 10 epochs and no dropout layer, with Relu as the activation function. 
 
-\begin{figure}[H]
+\begin{figure}[h]
     \centering
-    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_da.png}
+    \includegraphics[width=\linewidth]{results/cnn_grid_search/heatmap_grid_search_da.png}
     \caption{Results of a a grid search experimenting with dropout rates and two different activation functions. We ran this result both with 10 and 20 epochs as we saw no change for 10 epochs, this plot is for 20 epochs. The results for 10 epochs can be found in the results folder of our code.}
     \label{fig:cnn_pp}
 \end{figure}
-
 
 \newpage
 \subsection{Discussion of Performance}
 The baseline vs CNN both reaches 90 \% without an extensive tuning of the baseline, which calls for the question if using convolutional neural networks are worth the trouble of runtime and reduced interpretability. However, in some applications of a model trained on the MNIST data set, such
 as reading bank account numbers from handwritten digits, even tiny mistakes can be very costly.
-Therefore, it is crucial to reduce this error as much as possible. \cite{raschka2022machine}
-
-\iris {It should be noted that from the objective of performance, our tuning of hyperparameters could benefit from testing activation functions.}
+Therefore, it is crucial to reduce this error as much as possible \cite{raschka2022machine}. As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% which illustrates that the extensive tuning is necessary to achieve usable models \cite{simard2003mnist}.
 
 A discussion: our results are highly sensitive to the initial values of our tuning. In a neural network, everything is interconnected, making it difficult to isolate individual effects. Earlier in this course, we spent considerable time examining how factors such as different learning rates, optimizers, and epochs influence learning convergence and model performance. In this project, however, we aimed to explore new hyper parameters specific to convolutional neural networks (CNNs): filter numbers, kernel size, dropout, padding, and pooling. Our focus on these new hyperparameters meant that we paid less attention to tuning the basic ones, which may have impacted our ability to achieve optimal model performance. For future work, we would like to explore more efficient methods of tuning neural networks, such as Bayesian optimization.
 
