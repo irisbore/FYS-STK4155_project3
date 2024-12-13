@@ -209,7 +209,7 @@ The following steps summarize the implementation process of our experiment, with
 
 \begin{enumerate}
     \item \textbf{Data Loading and Splitting:} Load the MNIST data set and split it into train and test sets using     \texttt{torchvision.datasets}. 
-    \item \textbf{Baseline model}: We use stochastic gradient decent as optimizer and negative log-likelihood for Logistic Regression.Tune our Logistic Regression model using cross-validation.
+    \item \textbf{Tune Baseline Model}: We use stochastic gradient decent as optimizer and negative log-likelihood for Logistic Regression.Tune our Logistic Regression model using cross-validation.
     \item \textbf{Tune CNN}: Grid search the hyperparameters of our CNN in the following order, using cross-validation:
     \begin{enumerate}
         \item \textbf{Number of Linear and Convolutional Layers} Test one convolutional layer followed by two linear layers against two convolutional layer followed by three linear layers.
