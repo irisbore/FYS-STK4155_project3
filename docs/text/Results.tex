@@ -4,18 +4,42 @@
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
-    \caption{CNN grid search comparing a model with one convolutional layer followed by two linear layers against a model with two convolutional layers followed by three linear layers}
-    \label{fig:LogRegEpochs}
+    \caption{Results of a grid search comparing a convolutional neural network (CNN) with one convolutional layer followed by two linear layers, against a CNN with two convolutional layers followed by three linear layers.}
+    \label{fig:cnn:layers}
 \end{figure}
 
-\begin{figure}[H]
-    \centering
-    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
-    \caption{CNN grid search comparing a model with one convolutional layer followed by two linear layers against a model with two convolutional layers followed by three linear layers}
-    \label{fig:LogRegEpochs}
-\end{figure}
+We saw that ane additional convolutional layer and an additional linear layer increase the accuracy by 2\% for our initial values. We decided to go on with this structure.
 
 \subsubsection{Kernel Size and Number of Filters}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_kf.png}
+    \caption{Results of a a grid search comparing differnent kernel sizes and number of filter in each of the two convolutional layers  }
+    \label{fig:cnn_kf}
+\end{figure}
+The results testing different kernel sizes and number of filters in each convolutional layers showed that our initial structure of (32, 64) filters gave the best performance. As the performance was equal for kernel size 5 and 7, we decided to continue with kernel size 5 as it is the simplest structure.
+
+\subsubsection{Pooling and Padding}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_pp.png}
+    \caption{Results of a a grid search experimenting with adding padding and pooling after the convolutional layers \iris{is this correct?}}
+    \label{fig:cnn_pp}
+\end{figure}
+\iris{THESE RESULTS NEED TESTING}
+Pooling is good. Increased runtime significantly to not have it.
+We continued with pooling. 
+
+\subsubsection{Dropout Rates and Activation Functions}
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_da.png}
+    \caption{Results of a a grid search experimenting with dropout rates and two different activation functions. We ran this result both with 10 and 20 epochs as we saw no change for 10 epochs, this plot is for 20 epochs. The results for 10 epochs can be found in the results folder of our code.}
+    \label{fig:cnn_pp}
+\end{figure}
+
+We suspect our model structure and training time is too simple to get an effect of the dropout rate. When running the code for 10 epochs, we got 98\% accuracy for all four combinations. When increasing the number of epochs to 20, we got the same accuracy of 98.2\% as our previous implementation with 10 epochs and no dropout, for LeakyRelu. In line with our selection criterion, we decided to go keep our implementation with 10 epochs and no dropout layer, with Relu as the activation function. 
+
 \newpage
 As we can see from Figure \ref{fig:LogRegLearningRate}, the model accuracy increases from the smallest learning rate up until the largest learning rate. The biggest accuracy achieved is about 91\%.
 
