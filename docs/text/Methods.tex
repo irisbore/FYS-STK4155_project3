@@ -101,6 +101,11 @@ Parameters are estimated by minimizing $C(\boldsymbol{\beta})$ using iterative m
 \subsection{Optimization Techniques}
 To explore the optimization the convolutional network performance, we used various techniques described in the following:
 
+\subsubsection{Kernel Size and Number of Filters}
+
+We conducted a grid search with kernel sizes $K = {3, 5, 7}$ and filter counts $F = {8, 16, 32, 64}$. Kernel size determines the spatial extent of the receptive field, controlling how much of the input image each convolution operation captures. Smaller kernel sizes, such as $3\times3$, allow for precise feature extraction and can be stacked to achieve a larger effective receptive field. In contrast, larger kernel sizes, such as $5\times5$ and $7\times7$, capture broader features but may lead to higher computational costs and increased risk of overfitting.
+
+The number of filters $F$ defines the depth of the output tensor, which determines the model's ability to learn diverse features. Increasing the number of filters enhances the network's capacity to capture complex patterns but also raises computational requirements and the potential for overfitting.
 \subsubsection{Padding and Pooling:}
 
 We used Max Pooling, which is used to reduce the dimensionality of an input tensor (usually after a convolutional layer). For a kernel size of $n$, scans $n\times n$ grids and selects the highest values respectively. This grid moves over a number of elements equal to the pooling layer's stride between each such scan, and in our implementation using torch.nn.MaxPool2d(), stride is always equal to kernel size such that these filters never overlap. Pooling modifies the dimensions of the tensor passed through it as shown in equation \ref{eq:pooling-dims}.
@@ -118,12 +123,6 @@ Padding (in convolutional layers) and Pooling are complimentary, increasing and 
 \subsubsection{Dropout and Activation functions}
 We performed a grid search with various dropout layers, and the activation functions ReLU and Leaky ReLU (used for all except the last output) as ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}. Dropout is implemented in our code using torch.nn.Dropout(). Dropout sets the output of neurons of the preceding layer to zero with a set probability between zero and one. We tested the use of dropout after the first two (of three) linear layers, with probabilities \{0.3, 0.4, 0.5\} (same for both) in, as is similar to one of Raschka's implementations \cite[p. 478]{raschka2022machine}.
 
-
-\subsubsection{Kernel size and number of filters}
-
-We conducted a grid search with kernel sizes $K = {3, 5, 7}$ and filter counts $F = {8, 16, 32, 64}$. Kernel size determines the spatial extent of the receptive field, controlling how much of the input image each convolution operation captures. Smaller kernel sizes, such as $3\times3$, allow for precise feature extraction and can be stacked to achieve a larger effective receptive field. In contrast, larger kernel sizes, such as $5\times5$ and $7\times7$, capture broader features but may lead to higher computational costs and increased risk of overfitting.
-
-The number of filters $F$ defines the depth of the output tensor, which determines the model's ability to learn diverse features. Increasing the number of filters enhances the network's capacity to capture complex patterns but also raises computational requirements and the potential for overfitting.
 
 \subsection{Validation and Evaluation techniques}
 
@@ -175,11 +174,14 @@ In addition to cross-validation, bootstrapping was used to estimate the accuracy
 \end{figure}
 
 \subsection{Implementation}
+\subsubsection{CNN}
+The CNN class was implemented using the \texttt{PyTorch} library \cite{Paszke2019}, drawing inspiration from the "Training a Classifier" tutorial in the PyTorch documentation \cite{pytorch_cifar10_tutorial}. After studying this example as a proper way to code a CNN with PyTorch, we created a class capable of accommodating various network structures, enabling us to perform grid searches for the optimal configuration. For the initial parameters of our grid search experiments, we partially adopted the values from Raschka's example of a CNN for the MNIST dataset \cite{raschka2022machine}. However, we opted to limit the number of epochs to ten since Raschka's validation curves indicated convergence after five epochs. 
 
-The CNN class was implemented using the \texttt{PyTorch} library \cite{Paszke2019}, drawing inspiration from the "Training a Classifier" tutorial in the PyTorch documentation \cite{pytorch_cifar10_tutorial}. After studying this example as a proper way to code a CNN with PyTorch, we created a class capable of accommodating various network structures, enabling us to perform grid searches for the optimal configuration. For the initial parameters of our grid search experiments, we partially adopted the values from Raschka's example of a CNN for the MNIST dataset \cite{raschka2022machine}. However, we opted to limit the number of epochs to ten since Raschka's validation curves indicated convergence after five epochs. Given our limited computational resources and the large size of our training dataset, testing every possible configuration was not feasible. Therefore, we chose to start with informed initial values rather than random ones. After each grid search, we iteratively replaced the initial parameters with the best-performing values.
-\\
-\\
-The logistic regression was also implemented using the \texttt{PyTorch} library. The original inspiration on how to set up Logistic Regression were found with help from Antropic's Claude 3.5 Sonnet AI model \cite{anthropic_claude_3_5_sonnet}. The code was however modified as we saw we could use the same structure as our CNN model. Based on initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in range from 16 to 256 and epochs in range from 5 to 25. 
+\subsubsection{Logistic Regression}
+The logistic regression was also implemented using the \texttt{PyTorch} library. The original inspiration on how to set up Logistic Regression were found with help from Antropic's Claude 3.5 Sonnet AI model \cite{anthropic_claude_3_5_sonnet}. The code was however modified as we saw we could use the same structure as our CNN model. Based on initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in range from 16 to 256 and epochs in range from 5 to 25.
+
+\subsubsection{Selection Criterion}
+Due to our limited computational resources and the large size of our training dataset, it was not feasible to test every possible configuration of our model architecture and hyperparameters. Therefore, we opted to start with informed initial values for our hyperparameters based on trusted sources, rather than selecting them randomly. After each grid search, we iteratively replaced the initial parameters with the best-performing ones. Our criterion for selection was to choose the parameter that maximized cross-validated accuracy. In case of a tie between parameters, we always selected the value that represented a simpler model structure and incurred lower computational costs. It is worth noting that we only suggested values within a range that preliminary experiments indicated would align with our computational resources.
 \\
 \\
 The following steps summarize the implementation process of our experiment, with the initial values for LogReg presented in Table \ref{tb:loginitial} and for CNN presented in Table \ref{tb:initialvalues}:
