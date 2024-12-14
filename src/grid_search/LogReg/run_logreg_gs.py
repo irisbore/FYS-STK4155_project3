@@ -50,19 +50,19 @@ if __name__ == "__main__":
     batch_accuracies = []
     epoch_accuracies = []
 
-    # for lr in learning_rates:
-    #     val_accuracies = run_cv(trainset, config, epochs=fixed_epochs, learning_rate=lr, batch_size=fixed_batch_size)
-    #     mean_accuracy = float(np.mean(val_accuracies))
-    #     std_accuracy = float(np.std(val_accuracies))
-    #     lr_accuracies.append(mean_accuracy)
-    #     print(f"Learning Rate: {lr}, CV Accuracy: {mean_accuracy:.2f}% with standard deviation {std_accuracy:.2f}")
+    for lr in learning_rates:
+        val_accuracies = run_cv(trainset, config, epochs=fixed_epochs, learning_rate=lr, batch_size=fixed_batch_size)
+        mean_accuracy = float(np.mean(val_accuracies))
+        std_accuracy = float(np.std(val_accuracies))
+        lr_accuracies.append(mean_accuracy)
+        print(f"Learning Rate: {lr}, CV Accuracy: {mean_accuracy:.2f}% with standard deviation {std_accuracy:.2f}")
 
-    # for batch_size in batch_sizes:
-    #     val_accuracies = run_cv(trainset, config, epochs=fixed_epochs, learning_rate=fixed_lr, batch_size=batch_size)
-    #     mean_accuracy = float(np.mean(val_accuracies))
-    #     std_accuracy = float(np.std(val_accuracies))
-    #     batch_accuracies.append(mean_accuracy)
-    #     print(f"Batch size: {batch_size}, CV Accuracy: {mean_accuracy:.2f}% with standard deviation {std_accuracy:.2f}")
+    for batch_size in batch_sizes:
+        val_accuracies = run_cv(trainset, config, epochs=fixed_epochs, learning_rate=fixed_lr, batch_size=batch_size)
+        mean_accuracy = float(np.mean(val_accuracies))
+        std_accuracy = float(np.std(val_accuracies))
+        batch_accuracies.append(mean_accuracy)
+        print(f"Batch size: {batch_size}, CV Accuracy: {mean_accuracy:.2f}% with standard deviation {std_accuracy:.2f}")
 
     for epoch in epochs_list:
         val_accuracies = run_cv(trainset, config, epochs=epoch, learning_rate=fixed_lr, batch_size=fixed_batch_size)
@@ -73,8 +73,8 @@ if __name__ == "__main__":
 
 
     #Create plots
-    #utils.plot_parameter_study(learning_rates, lr_accuracies, "Learning Rate")
-    #utils.plot_parameter_study(batch_sizes, batch_accuracies, "Batch Size", xticks=True)
+    utils.plot_parameter_study(learning_rates, lr_accuracies, "Learning Rate")
+    utils.plot_parameter_study(batch_sizes, batch_accuracies, "Batch Size", xticks=True)
     utils.plot_parameter_study(epochs_list, epoch_accuracies, "Number of Epochs")
 
 
