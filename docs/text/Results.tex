@@ -1,5 +1,5 @@
 \subsection{Results: Tuning Logistic Regression }
-For logistic regression we see that learning rate, number of epochs and batch size affect accuracy differently. As we can see from Figure \ref{fig:LogRegLearningRate}, the model accuracy increases from the smallest learning rate up until the largest learning rate. The biggest accuracy achieved is about 91\% and the total increase is about 70\%. 
+For logistic regression, we observe that the learning rate, number of epochs, and batch size impact accuracy in different ways. As illustrated in Figure \ref{fig:LogRegLearningRate}, model accuracy improves as the learning rate increases, from the smallest to the largest value. The highest accuracy achieved is approximately 91\%, representing a total increase of about 70\%. The best learning rate is 0.1. A limitation of this result is its sensitivity to the initial number of epochs, which for this run is 10. Smaller learning rates often require more epochs for the model to converge. Since the goal of this tuning is merely to establish a reasonable baseline model, we accepted this result and selected 0.1 as the learning rate.
 
 \begin{figure}[H]
     \centering
@@ -9,7 +9,7 @@ For logistic regression we see that learning rate, number of epochs and batch si
 \end{figure}
 
 \newpage
-From Figure \ref{fig:LogRegEpochs} we can see that number of epochs over 10 does not have any effect on accuracy. An accuracy of 91.4\% was achieved with all number of epochs except for 5 epochs were the accuracy is 90.6\%. It was considered to run more epochs but because of the diminishing returns when epochs increases we decided to save computational resources. 
+From Figure \ref{fig:LogRegEpochs} we can see that the accuracy converges after 10 epochs. An accuracy of 91.4\% was achieved with all number of epochs except for five epochs where the accuracy is 90.6\%. 
 
 \begin{figure}[H]
     \centering
@@ -19,7 +19,7 @@ From Figure \ref{fig:LogRegEpochs} we can see that number of epochs over 10 does
 \end{figure}
 
 \newpage
-Moving on to Figure \ref{fig:LogRegBatchsize} we can see that in contrast to number of epochs, the increasing of batch size lowers accuracy. The biggest accuracy is 91.4\% when a batch size below 64 is used. It should be noted that the absolute value decrease of around 1\% for batch size and 0.8\% for epochs is not that big. This indicates that these two variables are less important in optimizing for accuracy than learning rate which had a 70\% difference from lowest to biggest. 
+Referring to Figure \ref{fig:LogRegBatchsize}, we observe that, unlike the number of epochs, an increase in batch size results in lower accuracy. The highest accuracy of 91.4\% is achieved when a batch size below 64 is used. It is important to note that the absolute decrease in accuracy is approximately 1\% for batch size and 0.8\% for epochs, which is relatively small. This suggests that these two variables are less critical for optimizing accuracy compared to the learning rate, which showed a 70\% difference between the lowest and highest values.
 
 \begin{figure}[H]
     \centering
@@ -41,7 +41,7 @@ From Figure \ref{fig:cnn:layers}, we found that an additional convolutional laye
 
 \newpage
 \subsubsection{Kernel Size and Number of Filters}
-Our results testing different kernel sizes and number of filters in each convolutional layers, illustrated in Figure \ref{fig:cnn_kf}, showed that our initial structure of (32, 64) filters gave the best performance. As the performance was equal for kernel size 5 and 7, we decided to continue with kernel size 5 as it is the simplest structure.
+Our results testing different kernel sizes and number of filters in the two convolutional layers are illustrated in Figure \ref{fig:cnn_kf}. We found that our initial structure of (32, 64) filters gave the best performance. As the performance was equal for kernel sizes 5 and 7, we decided to continue with kernel size 5 as it is the simplest structure. This benefits runtime too because a lower kernel size reduces computational load.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_kf.png}
@@ -51,7 +51,7 @@ Our results testing different kernel sizes and number of filters in each convolu
 
 \newpage
 \subsubsection{Pooling and Padding}
-Our grid search with pooling and convolutional layer padding is illustrated in \ref{fig:cnn_pp}. It showed that adding padding had minimal impact on the cross-validated accuracy of the MNIST classifier. This makes sense as the MNIST dataset is digitally centered, with the edges of each image conveying minimal to no useful information about the digit pictured, which means the main utility of padding, better capturing information on the edge of the images, was not impactful. Additionally, we see that adding pooling layers with a kernel size of 2 after both convolutional layers did not result in a drop in performance.
+Our grid search with pooling and convolutional layer padding is illustrated in Figure \ref{fig:cnn_pp}. It showed that adding padding had minimal impact on the cross-validated accuracy of the MNIST classifier. This makes sense as the MNIST dataset is digitally centered, with the edges of each image conveying minimal to no useful information about the digit pictured, which means the main utility of padding, better capturing information on the edge of the images, was not impactful. Additionally, we see that adding pooling layers with a kernel size of 2 after both convolutional layers did not result in a drop in performance.
 
 \begin{figure}[H]
     \centering
@@ -76,7 +76,7 @@ In \ref{table:runtimes_pp} we see that the addition of padding increases runtime
 
 \newpage
 \subsubsection{Dropout Rates and Activation Functions}
- Figure \ref{fig:cnn_pp} shows that the accuracy does not change much depending on dropout rate and activation functions. When running the code for 10 epochs, we got 98\% accuracy for all four combinations. We suspected our model structure and training time was too simple/short to get an effect of the dropout rate, due to our model not being prone to overfit. When increasing the number of epochs to 20, we got the same accuracy of 98.2\% for LeakyRelu and Dropout rate 0.5. This is the same performance as our previous implementation with 10 epochs and no dropout. In line with our selection criterion, we decided to go keep our implementation with 10 epochs and no dropout layer, with Relu as the activation function. 
+ Figure \ref{fig:cnn_pp} shows that the accuracy does not change much depending on dropout rate and activation functions. When running the code for 10 epochs, we got 98\% accuracy for all four combinations. We suspected our model structure and training time was too simple/short to get an effect of the dropout rate, due to our model not being prone to overfit. When increasing the number of epochs to 20, we got the same accuracy except for the case with LeakyRelu and Dropout rate 0.5, where the model achieved an accuracy of 98.2\%. This is the same performance as our previous implementation with 10 epochs and no dropout. In line with our selection criterion, we decided to go keep our implementation with 10 epochs and no dropout layer, with Relu as the activation function. 
 
 \begin{figure}[h]
     \centering
@@ -85,9 +85,11 @@ In \ref{table:runtimes_pp} we see that the addition of padding increases runtime
     \label{fig:cnn_pp}
 \end{figure}
 
+We suspect that the small impact on accuracy from trying to avoid overregularization by using Leaky ReLU and dropout can be explained by the structure of the dataset. MNIST is a relatively simple dataset and as such may be less prone to overfitting. This could cause techniques intended to overcome this to be ineffective.
+
 \subsection{Results: Final Assessment}
 
-Figure \ref{fig:ClasswiseAccuracyLogReg} shows that the Logistic Regression performs variably depending on what class of number that is predicted. The performance difference between class 8 as the lowest and class 0 as the highest is 12\%. The variablility is probably due to the fact that Logistic regression should be better at binary classification, such that the multivariable classification becomes to complex for this model to handle. The average performance among all classes is 92\%.
+Figure \ref{fig:ClasswiseAccuracyLogReg} illustrates that the performance of Logistic Regression varies depending on the digit class. The difference in accuracy between the lowest-performing class, class 8, and the highest-performing class, class 0, is 12\%. This variability is likely because logistic regression was originally designed for binary classification, and handling multiclass classification may be too complex for this model. On average, the accuracy across all classes is 92\%.
 
 \begin{figure}[H]
     \centering
@@ -95,9 +97,7 @@ Figure \ref{fig:ClasswiseAccuracyLogReg} shows that the Logistic Regression perf
     \caption{Total accuracy of Logistic Regression on each class of number in the MNSIT dataset.}
     \label{fig:ClasswiseAccuracyLogReg}
 \end{figure}
-
-In contrast, when looking at Figure \ref{fig:ClasswiseAccuracyCNN} we can see that the performance of our best CNN on each class of number is relativly stable. The variation is only about 2\% from number 3 and number 1. The lack of variation is a good confirmation of CNNs ability to do multivariable classification. The average performance among all classes is 99\%.
-
+In contrast, Figure \ref{fig:ClasswiseAccuracyCNN} shows that the performance of our best CNN on each digit class is constistently high. The classwise performance drop is only about 2\%, ranging from the worst performance of 97.5\% on class 3 to the best performance of 99.6\% on class 1. One could suspect that the variation in performance is due to the model seeing more examples of the digit 1, as the first digit is more likely to be small than large in naturally occurring data sets, due to Benfords Law. It could also just be that the pattern of one and zero are easier to catch for the model structure. The stable performance compared to Logistic Regression confirms CNNs' ability to effectively handle classification of images. The accuracy on the whole test set is 98\%.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{results/evaluation/CNN_classwise_acc.png}
@@ -105,25 +105,26 @@ In contrast, when looking at Figure \ref{fig:ClasswiseAccuracyCNN} we can see th
     \label{fig:ClasswiseAccuracyCNN}
 \end{figure}
 \newpage
-Further, we compute boostrapped accuracy for both models:
+Our bootstrapped accuracy in Figure \ref{fig:cnn_conf} shows that, for most of the bootstrapped test sets, the model performs close to the overall test set accuracy of 98\%, with a 95\% confidence interval of [98, 99]. The upper bound of our confidence interval is hence the same as the training set accuracy. Our confidence interval indicates that even when the nature of our test set varies, the performance of our model does not change dramatically. This is a positive sign for deploying our model in a production setting with new data. However, Figure \ref{fig:cnn_conf} also shows that the distribution of the bootstrapped accuracy clusters around each side of the confidence interval. This unexpected pattern suggests that there might be an issue with our implementation. The issue is more likely due to the nature of our dataset rather than a problem with the model itself, as we observe the same effect with our baseline model (see Figure \ref{fig:appendix_ci} in Appendix \ref{sec:appendix}). One possible explanation is that our test data is skewed. Confidence intervals assume the data is normally distributed for large sample sizes, in accordance with the Central Limit Theorem. Our dataset may not meet this assumption, which could make this approach less suitable.
+\newline
+\newline
+Another limitation of our evaluation is that we bootstrapped the test set. If we had instead bootstrapped the training set, trained a new model on each bootstrap sample, and evaluated it on the portion of the sample not used for training, we would have captured more of the uncertainty associated with model training and data variation. Bootstrapping the training set typically provides more precise confidence intervals \cite{raschka2020ci_simulation}. Given more computational resources, we would have opted to bootstrap the training set to generate confidence intervals. However, it was more important for us to prioritize cross-validating the grid searches.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\linewidth]{results/evaluation/cnn_confidence.png}
     \caption{The distribution of our best CNNs performance on the boostrapped MNIST dataset, with 1000 boostraps.}
-    \label{fig:ClasswiseAccuracyCNN}
+    \label{fig:cnn_conf}
 \end{figure}
 
 \newpage
-\subsection{Discussion of Performance}
-The baseline vs CNN both reaches 90 \% without an extensive tuning of the baseline, which calls for the question if using convolutional neural networks are worth the trouble of runtime and reduced interpretability. However, in some applications of a model trained on the MNIST data set, such
-as reading bank account numbers from handwritten digits, even tiny mistakes can be very costly.
-Therefore, it is crucial to reduce this error as much as possible \cite{raschka2022machine}. As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% which illustrates that the extensive tuning is necessary to achieve usable models \cite{simard2003mnist}.
-
-A discussion: our results are highly sensitive to the initial values of our tuning. In a neural network, everything is interconnected, making it difficult to isolate individual effects. Earlier in this course, we spent considerable time examining how factors such as different learning rates, optimizers, and epochs influence learning convergence and model performance. In this project, however, we aimed to explore new hyper parameters specific to convolutional neural networks (CNNs): filter numbers, kernel size, dropout, padding, and pooling. Our focus on these new hyperparameters meant that we paid less attention to tuning the basic ones, which may have impacted our ability to achieve optimal model performance. For future work, we would like to explore more efficient methods of tuning neural networks, such as Bayesian optimization.
-
-It was not fun to make a choice on the initial values, but we were forced to do it due to runtime. In the end we landed on making a choice we could argue, but in the perfect world we would test everything against each other. For computational resources, one could say that we chose a proper validation of the hyper parameters with cross-validation to take into account the randomness in different splits and model training, over testing everything against each other. 
-
-\textbf{Critical assesment of the methods}
-\iris{Draft below}
-CNNs are not interpretable. Logreg is interpretable. It requires knowledge of various hyper parameters, and tuning og the hyper parameters. For the MNIST case, where you want to recognize digits, CNNs are worth the trouble for most obvious applications. But for other data sets with pictures
-
+\subsection{Discussion}
+As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% \cite{simard2003mnist}. In contrast, we reached an accuracy of only 98\%, despite starting with good initial values. This demonstrates that extensive tuning is essential to develop highly accurate convolutional neural networks (CNNs). A key limitation in our approach was the high sensitivity of our results to the initial tuning values. In a neural network, all components are interrelated, which makes it challenging to isolate the effects of individual parameters.
+\newline
+\newline
+Earlier in this course, we spent considerable time examining how factors such as learning rates, optimizers, and the number of epochs influence convergence and model performance. In this project, however, we focused on exploring hyperparameters specific to CNNs, such as filter numbers, kernel size, dropout, padding, and pooling. As a result, we devoted less attention to tuning basic parameters, which may have impacted our ability to achieve optimal performance.
+\newline
+\newline
+Both the baseline logistic regression model and the CNN reached beyond 90\% accuracy, without an extensive tuning of the Logistic Regression model. This raises the question of whether using convolutional neural networks is worth the additional complexity, increased runtime, and reduced interpretability. However, in certain applications of a model trained on the MNIST dataset, such as reading bank account numbers from handwritten digits, even tiny errors can be very costly. Therefore, it is crucial to minimize these errors as much as possible \cite{raschka2022machine}. 
+\newline
+\newline
+For tasks like digit recognition on the MNIST dataset, our results indicate that CNNs are worth the effort due to their superior ability to capture spatial hierarchies in image data. However, this is not to say that Logistic Regression is useless for this task. In certain cases, Logistic Regression may still be a viable option, especially for simpler applications or when computational resources are limited. 
