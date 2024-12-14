@@ -2,6 +2,7 @@ from typing import List
 import sys
 
 import torch
+import torch.nn as nn
 import numpy as np
 from torch.utils.data import DataLoader
 from tqdm import tqdm
@@ -33,13 +34,13 @@ def get_bootstrap_sample(dataset: torch.Tensor, config: dict, seed: int) -> Data
         dataloader = DataLoader(dataset, batch_size=batch_size, sampler=torch.utils.data.SubsetRandomSampler(idx))
         return dataloader
 
-def bootstrap_test_set(testset: torch.Tensor, model, config: dict) -> List:
+def bootstrap_test_set(testset: torch.Tensor, model: nn.Module, config: dict) -> List:
         """
         Performs bootstrap sampling on the data set and computes accuracies. Varies the seed for each bootstrap run.
 
         Args:
                 testset (torch.Tensor): The test dataset, this method is only intented for test/validation sets.
-                model: The model to evaluate.
+                model(nn.Module): The model to evaluate.
                 config (dict): Configuration dictionary containing the number of bootstraps.
 
         Returns:
@@ -52,3 +53,4 @@ def bootstrap_test_set(testset: torch.Tensor, model, config: dict) -> List:
                 total_accuracies.append(accuracy)
 
         return total_accuracies
+

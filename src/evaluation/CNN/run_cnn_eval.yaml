@@ -1,7 +1,7 @@
 seed: 1
 n_bootstraps: 1000
 download_data: True
-save_plot: False
+save_plot: True
 model_type: cnn
 learning_rate: 0.001
 batch_size: 64

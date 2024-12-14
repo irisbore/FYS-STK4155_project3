@@ -1,13 +1,10 @@
 import sys
 from tqdm import tqdm
-from sklearn.model_selection import StratifiedKFold
 import torch
 import torch.nn as nn
 import torch.optim 
 from torch.utils.data import DataLoader
 import git 
-import yaml
-import pandas as pd
 import numpy as np
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
@@ -15,48 +12,70 @@ sys.path.append(PATH_TO_ROOT)
 
 from src.models.CNN import ConvNet
 from src.models.LogisticRegression import LogisticRegression
-from src.utils import utils
 
 def train_model(trainloader: DataLoader, config: dict, layer_configs=None, learning_rate=None, epochs=None):
-        if learning_rate == None:
-            learning_rate=config['learning_rate']
+    """
+    Trains a model using the provided data set and configuration. 
 
-        if epochs==None:
-            epochs = config['epochs']
+    Args:
+        trainloader (DataLoader): DataLoader for the training dataset.
+        config (dict): Configuration dictionary containing model settings like learning rate, epochs, and model type.
+        layer_configs (dict, optional): Configuration for model layers for CNN (default is None).
+        learning_rate (float, optional): Learning rate for the optimizer (default is None).
+        epochs (int, optional): Number of training epochs (default is None).
 
-        if config['model_type'] == "cnn":
-            model = ConvNet(layer_configs)
-            criterion = nn.CrossEntropyLoss()
-            optimizer  = torch.optim.Adam(model.parameters(), lr=learning_rate)
-        
-        if config['model_type'] == "logreg":
-            model = LogisticRegression()
-            criterion = nn.NLLLoss()
-            optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
-        
-        
-        for epoch in tqdm(range(epochs)):
-            running_loss = 0.0
-            for i, data in enumerate(trainloader):
-                inputs, labels = data #list of [inputs, labels]
-                optimizer.zero_grad()
+    Returns:
+        nn.Module: The trained model.
+    """
+    if learning_rate == None:
+        learning_rate=config['learning_rate']
 
-                #forward
-                outputs = model(inputs)
-                loss = criterion(outputs, labels)
-                loss.backward()
-                optimizer.step()
+    if epochs==None:
+        epochs = config['epochs']
 
-                # print stats
-                running_loss += loss.item()
-                if i % config['print_interval'] == config['print_interval']-1: #print every interval
-                    print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
-                    running_loss = 0.0
+    if config['model_type'] == "cnn":
+        model = ConvNet(layer_configs)
+        criterion = nn.CrossEntropyLoss()
+        optimizer  = torch.optim.Adam(model.parameters(), lr=learning_rate)
+    
+    if config['model_type'] == "logreg":
+        model = LogisticRegression()
+        criterion = nn.NLLLoss()
+        optimizer = torch.optim.SGD(model.parameters(), lr=learning_rate)
+    
+    
+    for epoch in tqdm(range(epochs)):
+        running_loss = 0.0
+        for i, data in enumerate(trainloader):
+            inputs, labels = data #list of [inputs, labels]
+            optimizer.zero_grad()
 
-        return model
+            #forward
+            outputs = model(inputs)
+            loss = criterion(outputs, labels)
+            loss.backward()
+            optimizer.step()
+
+            # print stats
+            running_loss += loss.item()
+            if i % config['print_interval'] == config['print_interval']-1: #print every interval
+                print(f'[{epoch + 1}, {i + 1:5d}] loss: {running_loss / 2000:.3f}')
+                running_loss = 0.0
+
+    return model
 
 
-def test_model(testloader, model):         # Test on data set
+def test_model(testloader: DataLoader, model: nn.Module) -> float:    
+    """
+    Tests the model on the given test data and computes the overall accuracy.
+
+    Args:
+        testloader (DataLoader): DataLoader for the test dataset.
+        model (nn.Module): The trained model to evaluate.
+
+    Returns:
+        float: The overall accuracy as a percentage
+    """    
     correct = 0
     total = 0
     # since we're not training, we don't need to calculate the gradients for our outputs
@@ -70,10 +89,21 @@ def test_model(testloader, model):         # Test on data set
             total += labels.size(0)
             correct += (predicted == labels).sum().item()
 
-    accuracy = 100 * correct // total
+    accuracy = 100 * correct / total
     return accuracy
 
 def test_model_classwise(testloader, model, classes):
+    """
+    Tests the model on the given test data and computes the accuracy for each class.
+
+    Args:
+        testloader (DataLoader): DataLoader for the test dataset.
+        model (nn.Module): The trained model to evaluate.
+        classes (list): List of class names.
+
+    Returns:
+        dict: A dictionary with class-wise accuracy for each class.
+    """
      # prepare to count predictions for each class
     score_dict = {classname: 0 for classname in classes}
     correct_pred = {classname: 0 for classname in classes}
