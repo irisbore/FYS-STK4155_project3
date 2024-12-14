@@ -8,5 +8,5 @@ print_interval: 2000
 
 # Fixed values 
 learning_rate: 0.1 # The best value from searching learning rates
-batch_size: 64 # The best batch size
-epochs: 10 # The best number of epoch
+batch_size: 32 # The best batch size
+epochs: 25 # The best number of epoch
