@@ -5,23 +5,34 @@ import torch.optim as optim
 
 class ConvNet(nn.Module):
     def __init__(self, layer_configs):
-        """creates a convolutional neural network class
+        """
+        Creates a convolutional neural network class.
 
         Args:
-            layer_configs (list of dict): each dict is the config of a layer
-                'type' = either "conv", "linear"
-                #linear
-                    'in_features' = input dimensions
-                    'out_features' = output dimensions
-                #conv
-                    'in_channels' = input dimensions for conv
-                    'out_channels' = output dimensions for conv
-                    'kernel_size' = kernel size for conv
-                    'padding' = padding (default = 0)
-                'activation' = either "sigmoid", "ReLU" or undefined/None
-                'pooling' = undefined if none, kernel_size: int if you want pooling
-                'dropout' = underfined if none, other wise, probability (0,1)
-            (including activation function and pooling)
+            layer_configs (list of dict): Each dictionary contains the configuration for a layer.
+                - 'type' (str): Either "conv" or "linear".
+                - If 'type' is "linear":
+                    - 'in_features' (int): Input dimensions.
+                    - 'out_features' (int): Output dimensions.
+                - If 'type' is "conv":
+                    - 'in_channels' (int): Input channels for the convolutional layer.
+                    - 'out_channels' (int): Output channels for the convolutional layer.
+                    - 'kernel_size' (int or tuple): Kernel size for the convolutional layer.
+                    - 'padding' (int, optional): Padding for the convolutional layer (default is 0).
+                - 'activation' (str or None): Activation function, either "sigmoid", "ReLU", or None.
+                - 'pooling' (int, optional): Kernel size for pooling (if pooling).
+                - 'dropout' (float, optional): Probability of dropout (between 0 and 1, default is None).
+        
+        
+        Methods:
+        _get_activation(activation):
+            Returns the appropriate activation function based on the input string.
+        
+        forward(x):
+            Defines the forward pass. Takes an input tensor, processes it through the layers, and returns the output.
+        
+        get_flattened_size():
+            Calculates the flattened size of the output after all convolutional and pooling layers.
         """
         super(ConvNet, self).__init__()
         self.layers = nn.ModuleList()
