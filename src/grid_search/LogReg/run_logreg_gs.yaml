@@ -6,7 +6,7 @@ print_interval: 2000
 
 # Fixed values 
 fixed_lr: 0.1 # The best value from searching learning rates
-fixed_batch_size: 64 # The initial batch size (and best)
+fixed_batch_size: 64 #The initial batch size
 fixed_epochs: 10
 
 # Learning rate values to test
