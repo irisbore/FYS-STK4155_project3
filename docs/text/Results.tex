@@ -9,17 +9,17 @@ For logistic regression, we observe that the learning rate, number of epochs, an
 \end{figure}
 
 \newpage
-From Figure \ref{fig:LogRegEpochs} we can see that the accuracy converges after 10 epochs. A maximum accuracy of 92\% was achieved with 25 epochs, which gives a difference of 0.8\% from the lowest score from 5 epochs. 
+From Figure \ref{fig:LogRegEpochs} we can see that accuracy increase with the number of epochs. A maximum accuracy of 92\% was achieved with 25 epochs, which gives a difference of 0.8\% from the lowest score obtained with 5 epochs. We continue with 25 epochs for our final model.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/logreg/number_of_epochs_study.png}
-    \caption{Logistic regression classification with epochs in the range from $5$ to $25$. The biggest accuracy achieved is 92\% with 25 epochs.}
+    \caption{Logistic regression classification with epochs in the range from $5$ to $25$. The best accuracy achieved is 92\% with 25 epochs.}
     \label{fig:LogRegEpochs}
 \end{figure}
 
 \newpage
-Referring to Figure \ref{fig:LogRegBatchsize}, we observe that, unlike the number of epochs, an increase in batch size results in lower accuracy. The highest accuracy of 91.8\% is achieved when a batch size 32 is used. In contrast a batch size of 256 gives the lowest accuracy of 90.8\%. It is important to note that the absolute decrease in accuracy is approximately 1\% for batch size and 0.8\% for epochs, which is relatively small. This suggests that these two variables are less critical for optimizing accuracy compared to the learning rate, which showed a 70\% difference between the lowest and highest values.
+Referring to Figure \ref{fig:LogRegBatchsize}, we observe that, unlike the number of epochs, an increase in batch size results in lower accuracy. The highest accuracy of 91.8\% is achieved when a batch size 32 is used. In contrast a batch size of 256 gives the lowest accuracy of 90.8\%. It is important to note that the absolute decrease in accuracy is approximately 1\% for batch size and 0.8\% for epochs, which is relatively small. This suggests that these two variables are less critical for optimizing accuracy compared to the learning rate, which showed a 70\% difference between the lowest and highest values. However, we choose a batch size of 32 for our final model, in line with our selection criteria.
 
 \begin{figure}[H]
     \centering
@@ -51,7 +51,7 @@ Our results testing different kernel sizes and number of filters in the two conv
 
 \newpage
 \subsubsection{Pooling and Padding}
-Our grid search with pooling and convolutional layer padding is illustrated in Figure \ref{fig:cnn_pp}. It showed that adding padding had minimal impact on the cross-validated accuracy of the MNIST classifier. This makes sense as the MNIST dataset is digitally centered, with the edges of each image conveying minimal to no useful information about the digit pictured, which means the main utility of padding, better capturing information on the edge of the images, was not impactful. Additionally, we see that adding pooling layers with a kernel size of 2 after both convolutional layers did not result in a drop in performance.
+Our grid search with pooling and convolutional layer padding is illustrated in Figure \ref{fig:cnn_pp}. It showed that adding padding had a minimal, even slightly negative, impact on the cross-validated accuracy of the MNIST classifier. This makes sense as the MNIST dataset is digitally centered, with the edges of each image conveying minimal to no useful information about the digit pictured, which means the main utility of padding, better capturing information on the edge of the images, was not impactful. Additionally, we see our initial configuration of adding pooling layers with a kernel size of 2 has the highest accuracy of 98.9\%.
 
 \begin{figure}[H]
     \centering
@@ -60,7 +60,7 @@ Our grid search with pooling and convolutional layer padding is illustrated in F
     \label{fig:cnn_pp}
 \end{figure}
 
-In \ref{table:runtimes_pp} we see that the addition of padding increases runtimes drastically, while pooling conversely decreases it significantly. Taking into account the previously minimal performance increase and decrease of padding and pooling respectively, we identify no padding and pooling with a kernel size of 2 as the ideal configuration.
+In \ref{table:runtimes_pp} we see that the addition of padding increases runtimes drastically, while pooling conversely decreases it significantly. Taking into account the positive effect of pooling and negative effect of padding on model accuracy, we identify no padding and pooling with a kernel size of 2 as the ideal configuration.
 
 \begin{table}[H]
     \centering
@@ -70,7 +70,7 @@ In \ref{table:runtimes_pp} we see that the addition of padding increases runtime
 \hline
                     & \textbf{No Padding}      & \textbf{Padding: 2}      \\ \hline
 \textbf{No Pooling} & 28 minutes 58.43 seconds & 55 minutes 3.76 seconds \\ \hline
-\textbf{Pooling: 2} & 7 minutes 50.80 seconds & 19 minutes 28.03 seconds \\ \hline
+\textbf{Pooling: 2} & 7 minutes 50.80 seconds & 19 minutes 17.78 seconds \\ \hline
 \end{tabular}
 \end{table}
 
@@ -111,14 +111,14 @@ Figure \ref{fig:cnn_conf} also shows that although the distribution of the boots
 \newline
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{results/evaluation/cnn_confidence.png}
+    \includegraphics[width=0.7\linewidth]{results/evaluation/cnn_confidence.png}
     \caption{The distribution of our best CNNs performance on the boostrapped MNIST dataset, with 1000 boostraps.}
     \label{fig:cnn_conf}
 \end{figure}
 
 \newpage
 \subsection{Discussion}
-As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% \cite{simard2003mnist}. In contrast, we reached an accuracy of only 98.7\%, despite starting with good initial values. This demonstrates that extensive tuning is essential to develop highly accurate convolutional neural networks (CNNs). A key limitation in our approach was the high sensitivity of our results to the initial tuning values. In a neural network, all components are interrelated, which makes it challenging to isolate the effects of individual parameters.
+As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% \cite{simard2003mnist}. In contrast, we reached an accuracy of only 98.9\%, despite starting with good initial values. This demonstrates that extensive tuning is essential to develop highly accurate convolutional neural networks (CNNs). A key limitation in our approach was the high sensitivity of our results to the initial tuning values. In a neural network, all components are interrelated, which makes it challenging to isolate the effects of individual parameters.
 \newline
 \newline
 Earlier in this course, we spent considerable time examining how factors such as learning rates, optimizers, and the number of epochs influence convergence and model performance. In this project, however, we focused on exploring hyperparameters specific to CNNs, such as filter numbers, kernel size, dropout, padding, and pooling. As a result, we devoted less attention to tuning basic parameters, which may have impacted our ability to achieve optimal performance.
