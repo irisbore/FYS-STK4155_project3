@@ -2,7 +2,7 @@
     ├── data                            # Placeholder for the data set (will be downloaded on the local machine when running the source scripts)          
     ├── docs                            # Screenshots of conversations with ChatGPT (and latex code for report)
     ├── results                         # Files with the results of the experiments and/or images of the plotted results. Also a placeholder for a model that is finished training, on local machine
-    ├── src                             # Source files for running our experiments 
+    ├── src                             # Code to run our experiments (description in the scripts)
     │   ├── utils                       # Python files with functions needed for running our experiments
     │   ├── models                      # One python file for each model class
     │   ├── grid_search
