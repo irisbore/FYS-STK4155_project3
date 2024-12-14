@@ -34,18 +34,18 @@ Referring to Figure \ref{fig:LogRegBatchsize}, we observe that, unlike the numbe
 From Figure \ref{fig:cnn:layers}, we found that an additional convolutional layer and an additional linear layer increase the accuracy by 0.2\%, from 98.7\% to 98.9\% for our initial values. We decided to go on with this structure.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
+    \includegraphics[width=0.7\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
     \caption{Results of a grid search comparing a convolutional neural network (CNN) with one convolutional layer followed by two linear layers, against a CNN with two convolutional layers followed by three linear layers.}
     \label{fig:cnn:layers}
 \end{figure}
 
 \newpage
 \subsubsection{Kernel Size and Number of Filters}
-Our results testing different kernel sizes and number of filters in the two convolutional layers are illustrated in Figure \ref{fig:cnn_kf}. We found that our initial structure of (32, 64) filters gave the best performance. Additionally, a kernel size of 5 performs better than 7 in all cases, and better than 3 for (32, 64) filters, so we continued with kernel size 5. The choice of a kernel size of 5 over 6 also benefits runtime too because a lower kernel size reduces computational load.
+Our results testing different kernel sizes and number of filters in the two convolutional layers are illustrated in Figure \ref{fig:cnn_kf}. We found that our initial structure of (32, 64) filters gave the best performance, so we continued using that. Additionally, our initial kernel size of 5 performed better than 7 in all cases, and better than 3 for (32, 64) filters, so we continued with a kernel size of 5. The choice of a kernel size of 5 over 7 also benefits runtime because a lower kernel size reduces computational load. Overall the best cross-validated performance we achieved was 98.9\%.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_kf.png}
-    \caption{Results of a a grid search comparing differnent kernel sizes and number of filter in each of the two convolutional layers. Leraning rate is 0.001.}
+    \includegraphics[width=0.8\textwidth]{results/cnn_grid_search/heatmap_grid_search_kf.png}
+    \caption{Results of a a grid search comparing different kernel sizes and number of filter in each of the two convolutional layers. Learning rate is 0.001.}
     \label{fig:cnn_kf}
 \end{figure}
 
@@ -55,7 +55,7 @@ Our grid search with pooling and convolutional layer padding is illustrated in F
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_pp.png}
+    \includegraphics[width=0.75\textwidth]{results/cnn_grid_search/heatmap_grid_search_pp.png}
     \caption{Heatmap reasults of Pooling and Padding grid search with two convolutional layers followed by three linear layers. The Y-axis represents pooling kernel size (0 means no pooling), with pooling layers placed after each convolutional layer, and the X-axis represents the convolutional layers' padding.}
     \label{fig:cnn_pp}
 \end{figure}
@@ -69,23 +69,22 @@ In \ref{table:runtimes_pp} we see that the addition of padding increases runtime
 \begin{tabular}{|l|l|l|}
 \hline
                     & \textbf{No Padding}      & \textbf{Padding: 2}      \\ \hline
-\textbf{No Pooling} & 30 minutes 49.83 seconds & 57 minutes 28.26 seconds \\ \hline
-\textbf{Pooling: 2} & 8 minutes 42.44 seconds  & 19 minutes 28.03 seconds \\ \hline
+\textbf{No Pooling} & 28 minutes 58.43 seconds & 55 minutes 3.76 seconds \\ \hline
+\textbf{Pooling: 2} & 7 minutes 50.80 seconds & 19 minutes 28.03 seconds \\ \hline
 \end{tabular}
 \end{table}
 
 \newpage
 \subsubsection{Dropout Rates and Activation Functions}
- Figure \ref{fig:cnn_pp} shows that the accuracy does not change much depending on dropout rate and activation functions. When running the code for 10 epochs, we got 98\% accuracy for all four combinations. We suspected our model structure and training time was too simple/short to get an effect of the dropout rate, due to our model not being prone to overfit. When increasing the number of epochs to 20, we got the same accuracy except for the case with LeakyRelu and Dropout rate 0.5, where the model achieved an accuracy of 98.2\%. This is the same performance as our previous implementation with 10 epochs and no dropout. In line with our selection criterion, we decided to go keep our implementation with 10 epochs and no dropout layer, with Relu as the activation function. 
-
+Figure \ref{fig:cnn_pp} shows that the accuracy did not improve when using techniques designed to reduce overfitting, such as dropout or Leaky ReLU. With 10 epochs of training, we observed slightly lower accuracies compared to the previous configuration using ReLU and no dropout (98.9\%, as shown in Figure \ref{fig:cnn_kf}). This suggests that either the model did not overfit significantly, or that these techniques were ineffective in reducing overfitting and may have even worsened the model's performance. We suspected that our model architecture and the relatively short training duration of 10 epochs were too simple or brief for dropout to have any benefit, especially since the model did not seem prone to overfitting. Based on our selection criteria, we decided to keep the original configuration with 10 epochs, no dropout layer, and ReLU as the activation function.
 \begin{figure}[H]
     \centering
-    \includegraphics[width=\linewidth]{results/cnn_grid_search/heatmap_grid_search_da.png}
-    \caption{Results of a a grid search experimenting with dropout rates and two different activation functions. We ran this result both with 10 and 20 epochs as we saw no change for 10 epochs, this plot is for 20 epochs. The results for 10 epochs can be found in the results folder of our code.}
+    \includegraphics[width=0.7\linewidth]{results/cnn_grid_search/heatmap_grid_search_da.png}
+    \caption{Results of a a grid search experimenting with dropout rates and two different activation functions.}
     \label{fig:cnn_pp}
 \end{figure}
 
-We suspect that the small impact on accuracy from trying to avoid overregularization by using Leaky ReLU and dropout can be explained by the structure of the dataset. MNIST is a relatively simple dataset and as such may be less prone to overfitting. This could cause techniques intended to overcome this to be ineffective.
+We suspect that the negative impact on accuracy from using dropout to prevent overfitting may be due to the nature of the MNIST dataset. As a relatively simple dataset, MNIST is likely less prone to overfitting, which could make the techniques designed to address overfitting ineffective.
 
 \subsection{Results: Final Assessment}
 
@@ -107,7 +106,7 @@ In contrast, Figure \ref{fig:ClasswiseAccuracyCNN} shows that the performance of
 
 \newpage
 Our bootstrapped accuracy in Figure \ref{fig:cnn_conf} shows that, for most of the bootstrapped test sets, the model performs close to the overall test set accuracy of 98.86\%, with a 95\% confidence interval of [98.66, 99.06]. This is significantly more narrow than the confidence interval of the Logistic Regression, reflecting that the CNN is more stable across the different digit classes. Our confidence interval indicates that even when the nature of our test set varies, the performance of our model does not change dramatically. This is a positive sign for deploying our model in a production setting with new data. 
-Figure \ref{fig:cnn_conf} also shows that although the distribution of the bootstrapped accuracy has a clear mean and resembling a bell shape, it is somewhat spiky even though we run 1000 boostraps. This unexpected pattern is more likely due to the nature of our dataset rather than a problem with the model itself, as we observe some of the same effect with our baseline model (see Figure \ref{fig:appendix_ci} in Appendix \ref{sec:appendix}). Constructing a confidence interval by taking the percentiles of the boostrapped estimates assumes that the bootstrap distribution reasonably approximates the true sampling distribution. It could be that our data does not meet this assumption, possibly due to the MNIST data set being a preprocessed data set \cite{lecun1998gradient}.
+Figure \ref{fig:cnn_conf} also shows that although the distribution of the bootstrapped accuracy is not exactly skewed, it is still spiky even though we run 1000 boostraps. This unexpected pattern is more likely due to the nature of our dataset rather than a problem with the model itself, as we observe some of the same effect with our baseline model (see Figure \ref{fig:appendix_ci} in Appendix \ref{sec:appendix}). Constructing a confidence interval by taking the percentiles of the boostrapped estimates assumes that the bootstrap distribution is symmetric and smooth, so there is a possibility that our confidence interval may be to optimistic. \cite{davison1997bibliography}
 \newline
 \newline
 \begin{figure}[H]
@@ -119,7 +118,7 @@ Figure \ref{fig:cnn_conf} also shows that although the distribution of the boots
 
 \newpage
 \subsection{Discussion}
-As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% \cite{simard2003mnist}. In contrast, we reached an accuracy of only 98\%, despite starting with good initial values. This demonstrates that extensive tuning is essential to develop highly accurate convolutional neural networks (CNNs). A key limitation in our approach was the high sensitivity of our results to the initial tuning values. In a neural network, all components are interrelated, which makes it challenging to isolate the effects of individual parameters.
+As a benchmark, the best accuracy achieved on the MNIST dataset is 99.6\% \cite{simard2003mnist}. In contrast, we reached an accuracy of only 98.7\%, despite starting with good initial values. This demonstrates that extensive tuning is essential to develop highly accurate convolutional neural networks (CNNs). A key limitation in our approach was the high sensitivity of our results to the initial tuning values. In a neural network, all components are interrelated, which makes it challenging to isolate the effects of individual parameters.
 \newline
 \newline
 Earlier in this course, we spent considerable time examining how factors such as learning rates, optimizers, and the number of epochs influence convergence and model performance. In this project, however, we focused on exploring hyperparameters specific to CNNs, such as filter numbers, kernel size, dropout, padding, and pooling. As a result, we devoted less attention to tuning basic parameters, which may have impacted our ability to achieve optimal performance.
