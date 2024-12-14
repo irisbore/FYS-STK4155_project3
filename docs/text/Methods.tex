@@ -1,4 +1,4 @@
-This study primarily focused on implementing and comparing the performance of various Convolutional Neural Networks (CNNs) with different layers, kernel sizes, filter numbers, activation functions and regularization techniques on the MNIST dataset. To illustrate the advantages of CNNs, we benchmarked our results against Logistic Regression (LR) across five different learning rates, batch sizes and epochs. To ensure the robustness and reliability of our findings, we employed several data preprocessing and optimization techniques, including train-test splitting, cross-validation on the training set, and bootstrapping on the test set.                
+This study primarily focused on implementing and comparing the performance of various Convolutional Neural Networks (CNNs) with different layers, kernel sizes, numbers of filters, activation functions, and regularization techniques on the MNIST dataset. To illustrate the advantages of CNNs, we benchmarked our results against a Logistic Regression (LR) model tuned with five different learning rates, batch sizes, and numbers of epochs. To ensure the robustness and reliability of our findings, we employed several data validation and resampling techniques, including train-test splitting, cross-validation on the training set, and bootstrapping on the test set.                
 
 
 \subsection{Data Loading and Preprocessing}
@@ -8,7 +8,7 @@ This study primarily focused on implementing and comparing the performance of va
 We used PyTorch to load the MNIST dataset, which comprises 70,000 images in total. This dataset is pre-divided into a training set of 60,000 images and a test set of 10,000 images. During the optimization process, the training set was utilized to iteratively update the model parameters in order to minimize the loss function. Meanwhile, the test set remained completely untouched until the final evaluation phase. This separation allowed us to evaluate the model's ability to generalize to new, unseen data. By conducting model selection and hyperparameter tuning exclusively on the training data, and reserving final performance checks for the test data, we obtained a more realistic measure of the model’s predictive power and robustness.
 
 \subsubsection{Feature Scaling}
-When loading our data set, we scaled the pixels to be within the range [0, 1]. This normalization ensured that the input features (pixels) lied within a more uniform and manageable range than the original pixel range of [0,255]. As a result, the optimization routines, such as stochastic gradient descent or Adam, could converge more quickly and reliably, reducing the chances of getting stuck in poor local minima or suffering from numerical instabilities. In essence, feature scaling fosters a more stable and efficient learning environment for the model. 
+When loading our data set, we scaled the pixels to be within the range [0, 1]. This normalization ensured that the input features (pixels) lied within a more uniform and manageable range than the original pixel range of [0,255]. As a result, the optimization routines, Stochastic Gradient Descent for LR and Adam for CNN, could converge more quickly and reliably, reducing the chances of getting stuck in poor local minima or suffering from numerical instabilities. In essence, feature scaling fosters a more stable and efficient learning environment for the model. 
 
 \subsection{Classification Techniques}
 
@@ -118,7 +118,7 @@ We used Max Pooling, which is used to reduce the dimensionality of an input tens
 
 Here $D$ represents the height and width of the input tensor (size = $D\times D \times C$ where $C$ is channels). K, P, and S are the kernel size, padding size, and stride of the pooling layer respectively.
 
-Padding (in convolutional layers) and Pooling are complimentary, increasing and decreasing tensor dimensions respectively. Setting padding ($P$) in a convolutional layer to $\frac {K-1}2$ where $K$ is the kernel size means the output tensor has the same dimensionality (discounting number of channels) as the input tensor, assuming stride $= 1$ (\ref{eq:pooling-dims}). We test $P = 0,\frac {K-1}2$, and Pooling Kernel Size = $0,2$, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
+Padding (in convolutional layers) and Pooling are complimentary, increasing and decreasing tensor dimensions respectively. Setting padding ($P$) in a convolutional layer to $\frac {K-1}2$ where $K$ is the kernel size means the output tensor has the same dimensionality (discounting number of channels) as the input tensor, assuming stride $= 1$ (\ref{eq:outputfeaturemapequation}). We test $P = 0,\frac {K-1}2$, and Pooling Kernel Size = $0,2$, where $0$ essentially means no pooling layer in a grid search. These values were chosen because they are common and pooling layers were placed after each convolutional layer.
 
 \subsubsection{Dropout and Activation functions}
 We performed a grid search with various dropout layers, and the activation functions ReLU and Leaky ReLU (used for all except the last output) as ReLU is the most commonly used activation function in convolutional neural networks, while leaky ReLU has also proven useful in convolutional networks \cite {activation_functions}. Dropout is implemented in our code using torch.nn.Dropout(). Dropout sets the output of neurons of the preceding layer to zero with a set probability between zero and one. We tested the use of dropout after the first two (of three) linear layers, with probabilities \{0.3, 0.4, 0.5\} (same for both) in, as is similar to one of Raschka's implementations \cite[p. 478]{raschka2022machine}.
@@ -155,7 +155,11 @@ To assess the models' generalization capability and to avoid overfitting, we emp
 
 \subsubsection{Bootstrapping}
 
-In addition to cross-validation, bootstrapping was used to estimate the accuracy and stability of our final model evaluation. Our bootstrapped implementation repeatedly resampled the test data with replacement to create multiple bootstrap samples B. For each bootstrap sample B, we evaluated model performance. This method allows us to compute confidence intervals for the model performance. After running the boostrap algortihm, we constructed a 95 \% confidence interval by taking the 2.5th and 97.5th percentiles of the bootstrap estimates. The bootstrap algorithm is presented with pseudocode in Algorithm 2. \cite{hastie2009elements}
+In addition to cross-validation, we used non-parametric bootstrap to estimate the stability of our model performance. Our bootstrapped implementation repeatedly resampled the test data with replacement to create multiple bootstrap samples B. For each bootstrap sample B, we evaluated model performance. The bootstrap algorithm is presented with pseudocode in Algorithm 2. This method allowed us to compute confidence intervals for the model performance.
+\cite{hastie2009elements}
+
+\subsubsection{Confidence Intervals}
+After running the boostrap algorithm, we constructed a 95 \% confidence interval of our model accuracy. A 95\% confidence interval is a range of values that, with 95\% probability, contains the true unknown value of a parameter\cite{james2013introduction}. The lower and upper limits of our confidence interval were calculated by taking the 2.5th and 97.5th percentiles of the bootstrapped accuracy estimates.
 
 \begin{figure}[H]
     \begin{algorithm}[H]
@@ -178,13 +182,13 @@ In addition to cross-validation, bootstrapping was used to estimate the accuracy
 The CNN class was implemented using the \texttt{PyTorch} library \cite{Paszke2019}, drawing inspiration from the "Training a Classifier" tutorial in the PyTorch documentation \cite{pytorch_cifar10_tutorial}. After studying this example as a proper way to code a CNN with PyTorch, we created a class capable of accommodating various network structures, enabling us to perform grid searches for the optimal configuration. For the initial parameters of our grid search experiments, we partially adopted the values from Raschka's example of a CNN for the MNIST dataset \cite{raschka2022machine}. However, we opted to limit the number of epochs to ten since Raschka's validation curves indicated convergence after five epochs. 
 
 \subsubsection{Logistic Regression}
-The logistic regression was also implemented using the \texttt{PyTorch} library. The original inspiration on how to set up Logistic Regression were found with help from Antropic's Claude 3.5 Sonnet AI model \cite{anthropic_claude_3_5_sonnet}. The code was however modified as we saw we could use the same structure as our CNN model. Based on initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in range from 16 to 256 and epochs in range from 5 to 25.
+The logistic regression was also implemented using the \texttt{PyTorch} library. The original inspiration on how to set up Logistic Regression were found with help from Antropic's Claude 3.5 Sonnet AI model \cite{anthropic_claude_3_5_sonnet}. The code was however modified as we saw we could use the same structure as our CNN model. Based on initial experiments, we selected a learning rate range from \( 10^{-5}\) to \( 10^0 \), batch sizes in the range from 16 to 256, and epochs in the range from 5 to 25.
 
 \subsubsection{Selection Criterion}
 Due to our limited computational resources and the large size of our training dataset, it was not feasible to test every possible configuration of our model architecture and hyperparameters. Therefore, we opted to start with informed initial values for our hyperparameters based on trusted sources, rather than selecting them randomly. After each grid search, we iteratively replaced the initial parameters with the best-performing ones. Our criterion for selection was to choose the parameter that maximized cross-validated accuracy. In case of a tie between parameters, we always selected the value that represented a simpler model structure and incurred lower computational costs. It is worth noting that we only suggested values within a range that preliminary experiments indicated would align with our computational resources.
 \\
 \\
-The following steps summarize the implementation process of our experiment, with the initial values for LogReg presented in Table \ref{tb:loginitial} and for CNN presented in Table \ref{tb:initialvalues}:
+Raschka \ inspired the choice of initial values in our convolutional neural networks cite{raschka2022machine}. We used 10 or 20 epochs (as specified), a batch size of 64, a convolutional layer stride of 1, and a pooling layer (where applicable) stride of 1 and padding of 0. The following steps summarize the implementation process of our experiment, with the initial values for LogReg presented in Table \ref{tb:loginitial} and for CNN presented in Table \ref{tb:initialvalues}:
 
 \begin{table}[H]
  \centering
@@ -201,10 +205,11 @@ The following steps summarize the implementation process of our experiment, with
     \centering
     \caption{Table with inital values for CNN before hyper parameter tuning, adapted from Raschka \cite{raschka2022machine}}
     
-\begin{tabular}{|l|l|l|l|l|l|l|}
+\begin{tabular}{|p{2.5cm}|p{2cm}|l|p{1.5cm}|p{2cm}|p{2.5cm}|p{3cm}|}
 \hline
-                       & \textbf{Epochs} & \textbf{Batch Size} & \textbf{Learning Rate} & \textbf{Optimizer} & \textbf{Kernel size} & \textbf{Filter Numbers} \\ \hline
-\textbf{Inital values} & 10              & 64                  & 0.001                  & Adam               & 5                    & (32, 64)                \\ \hline
+                       &\textbf{Learning rate} &  \textbf{Optimizer} & \textbf{Kernel size} & \textbf{Filter Numbers}& \textbf{padding (conv layer)} & \textbf{pooling kernel size (after each conv layer)} \\ \hline
+\textbf{Inital values}                 & 0.001                  & Adam               & 5                    & (32, 64)     & 0
+            & 2\\ \hline
 \end{tabular}
 \label{tb:initialvalues}
 \end{table}
@@ -218,9 +223,9 @@ The following steps summarize the implementation process of our experiment, with
         \item \textbf{Kernel Size and Number of Filters}
         We test Kernel Size: \{3, 5, 7\} and Number of Filters: \{(8,16), (16, 32), (32,64)\}.
         \item \textbf{Pooling and Padding}
-        We test $P = \{0,\frac {K-1}2\}$, and Pooling Kernel Size: \{0,2\}.
+        We test padding in convolutional layers of values $\{0,\frac {K-1}2\}$, where $K$ is the convolutional layer kernel size, and Pooling Kernel sizes: \{0,2\}.
         \item \textbf{Dropout rates and Activation Functions}
-        We tested the drop out rates \{0.3, 0.4, 0.5\} in that configuration. We test Activation Functions: \{ReLU, Leaky ReLU\}.
+        We perform a grid search with the dropout rates \{0.3, 0.5\} and Activation Functions: \{ReLU, Leaky ReLU\}.
     \end{enumerate}
     \item \textbf{Model Training:} Train CNNs and Logistic Regression on the training data with their respective validated hyper parameters. 
     \item \textbf{Testing:} Assess the final model performance on the test set. 
@@ -241,13 +246,14 @@ To ensure the reproducibility of our computational experiments, we have taken th
     \item Use a well known public data set with published benchmarked accuracies
     \item Present all final model parameters, as long as values tested during tuning of hyper parameters
     \item Use config files for the hyper parameters to make sure we were consistent across different scripts and make our code more readable
-    \item Seeded everything initally with seed from a separate config file.
-    \item Validated our tuning process with cross-validation, where we vary the seeds across different runs. 
+    \item Seeded everything with the initial seed from a separate config file.
+    \item Validated our tuning process with cross-validation, where we vary the seeds across different runs to validate our results further. 
     \item Used bootstrapped uncertainty measures for final model, where we vary the seeds across different runs. 
 \end{itemize}
 
 \subsection{Testing}
 We tested our implemention by comparing the performance of our model with the same initial values and structure as that of known benchmarked accuracies on the MNIST data set \cite{raschka2022machine} and \cite{lecun2015deep}. One could also argue that we have made our implementation more robust by having it reviewed by all members of the group, which in our experience increased the chance of catching errors. 
+
 \subsection{Large Language Models}
 
 With inspiration from FYS-STK4155 project 1 \cite{bore2023fysstk4155project1} we summarize our use of large language models: 
