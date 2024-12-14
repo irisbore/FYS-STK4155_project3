@@ -31,7 +31,7 @@ Referring to Figure \ref{fig:LogRegBatchsize}, we observe that, unlike the numbe
 \newpage
 \subsection{Results: Grid search on CNN}
 \subsubsection{Number of Linear Layers and Convolutional Layers}
-From Figure \ref{fig:cnn:layers}, we found that an additional convolutional layer and an additional linear layer increase the accuracy by 0.2\% for our initial values. We decided to go on with this structure.
+From Figure \ref{fig:cnn:layers}, we found that an additional convolutional layer and an additional linear layer increase the accuracy by 0.2\%, from 98.7\% to 98.9\% for our initial values. We decided to go on with this structure.
 \begin{figure}[H]
     \centering
     \includegraphics[width=\textwidth]{results/cnn_grid_search/heatmap_grid_search_layers.png}
@@ -89,7 +89,8 @@ We suspect that the small impact on accuracy from trying to avoid overregulariza
 
 \subsection{Results: Final Assessment}
 
-Figure \ref{fig:ClasswiseAccuracyLogReg} illustrates that the performance of Logistic Regression varies depending on the digit class. The difference in accuracy between the lowest-performing class, class 8, and the highest-performing class, class 0, is 12\%. This variability is likely because logistic regression was originally designed for binary classification, and handling multiclass classification may be too complex for this model. On average, the accuracy across all classes is 92\%.
+Figure \ref{fig:ClasswiseAccuracyLogReg} illustrates that the performance of Logistic Regression varies depending on the digit class. The difference in accuracy between the lowest-performing class, class 8, and the highest-performing class, class 0, is 12\%. This variability is likely because logistic regression was originally designed for binary classification, and handling multiclass classification may be too complex for this model. On average, the accuracy across all classes is 92\%.\iris{NEW RESULTS: Accuracy on training set is 92.72\%
+Accuracy on test set without boostrap is 91.99\%}
 
 \begin{figure}[H]
     \centering
@@ -106,7 +107,7 @@ In contrast, Figure \ref{fig:ClasswiseAccuracyCNN} shows that the performance of
 \end{figure}
 
 \newpage
-Our bootstrapped accuracy in Figure \ref{fig:cnn_conf} shows that, for most of the bootstrapped test sets, the model performs close to the overall test set accuracy of 98.86\%, with a 95\% confidence interval of [98.66, 99.06]. Our confidence interval indicates that even when the nature of our test set varies, the performance of our model does not change dramatically. This is a positive sign for deploying our model in a production setting with new data. Figure \ref{fig:cnn_conf} also shows that although the distribution of the bootstrapped accuracy has a clear mean and resemebling ¨a bell shape, it is somewhat spiky. This unexpected pattern is more likely due to the nature of our dataset rather than a problem with the model itself, as we observe the same effect with our baseline model (see Figure \ref{fig:appendix_ci} in Appendix \ref{sec:appendix}). One possible explanation is that confidence intervals assume the data is normally distributed for large sample sizes, in accordance with the Central Limit Theorem. Our dataset may not meet this assumption, which could make this approach less suitable.
+Our bootstrapped accuracy in Figure \ref{fig:cnn_conf} shows that, for most of the bootstrapped test sets, the model performs close to the overall test set accuracy of 98.86\%, with a 95\% confidence interval of [98.66, 99.06]. Our confidence interval indicates that even when the nature of our test set varies, the performance of our model does not change dramatically. This is a positive sign for deploying our model in a production setting with new data. Figure \ref{fig:cnn_conf} also shows that although the distribution of the bootstrapped accuracy has a clear mean and resemebling a bell shape, it is somewhat spiky even though we run 1000 boostraps. This unexpected pattern is more likely due to the nature of our dataset rather than a problem with the model itself, as we observe the same effect with our baseline model (see Figure \ref{fig:appendix_ci} in Appendix \ref{sec:appendix}). One possible explanation is that confidence intervals assume the data is normally distributed for large sample sizes, in accordance with the Central Limit Theorem. Our dataset may not meet this assumption, which could make this approach less suitable.
 \newline
 \newline
 
