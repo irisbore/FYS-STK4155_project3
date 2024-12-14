@@ -1,5 +1,5 @@
 The following resuls are copied from terminal run of run_cnn_gs_pooling_vs_padding.yaml:
-- Running time for padding: 0 and pooling: 0 is: 30 minutes 49.83 seconds
-- Running time for padding: 0 and pooling: 2 is: 8 minutes 42.44 seconds
-- Running time for padding: 2 and pooling: 0 is: 57 minutes 28.26 seconds
-- Running time for padding: 2 and pooling: 2 is:19 minutes 28.03 seconds
+- Running time for padding: 0 and pooling: 0 is: 28 minutes 58.43 seconds
+- Running time for padding: 0 and pooling: 2 is: 7 minutes 50.80 seconds
+- Running time for padding: 2 and pooling: 0 is: 55 minutes 3.76 seconds
+- Running time for padding: 2 and pooling: 2 is: 19 minutes 17.78 seconds
