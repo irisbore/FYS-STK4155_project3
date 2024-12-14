@@ -1,6 +1,6 @@
 seed: 1
 n_bootstraps: 1000
-download_data: False
+download_data: True
 save_plot: False
 model_type: cnn
 learning_rate: 0.001

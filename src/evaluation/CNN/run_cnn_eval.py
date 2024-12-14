@@ -13,7 +13,22 @@ PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
 from src.utils import utils, model_utils, bootstrap
 from src.models.CNN import ConvNet
+"""
+This script trains and evaluates the validated Convolutional Neural Network (CNN) on the MNIST dataset. 
 
+Steps:
+1. Loads configuration settings from a YAML file.
+2. Sets up data loading for the MNIST training and test datasets.
+3. Initializes and trains a CNN model using the provided configuration.
+4. Saves the trained model to a file.
+5. Evaluates the model on both the training and test sets, printing accuracy results.
+6. Computes and plots class-wise accuracy.
+7. Performs bootstrapping to estimate the model's test set accuracy with 95% confidence intervals.
+8. Saves the bootstrapped results to a plot file.
+
+The model is saved as 'mnist_net.pth' and the evaluation results are saved as 'cnn_confidence.png'. Both can be found in the results folder. 
+The MNIST data set is downloaded to the data folder.
+"""
 
 if __name__=="__main__":
         config_path = utils.get_config_path(
@@ -28,8 +43,8 @@ if __name__=="__main__":
         transform = torchvision.transforms.Compose([
         torchvision.transforms.ToTensor()
         ])
-        trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data/', train=True, download=download_data, transform=transform) 
-        testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'data', train=False,download=download_data, transform=transform) 
+        trainset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=True, download=download_data, transform=transform) 
+        testset = torchvision.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=False,download=download_data, transform=transform) 
         trainloader = DataLoader(trainset, batch_size=batch_size)
 
         layer_configs=config['layer_configs']
@@ -47,15 +62,17 @@ if __name__=="__main__":
         model.load_state_dict(torch.load(PATH, weights_only=True))
 
         # Model evaluation
-        # For reference
+        # For reference, print training accuracy
         accuracy = model_utils.test_model(trainloader, model)
         print(f'Accuracy on training set is {accuracy}%')
 
+        # Accuracy on test set
         testloader = DataLoader(testset, batch_size=batch_size)
         accuracy = model_utils.test_model(testloader, model)
         print(f'Accuracy on test set is {accuracy}%')
         classes = testset.classes
 
+        # Evaluate classwise accuracy
         score_dict = model_utils.test_model_classwise(testloader, model, classes)
         utils.plot_classwise(score_dict=score_dict, model="CNN", save_plot=True)
 
