@@ -76,7 +76,7 @@ def plot_grid_heatmap(df: pd.DataFrame, config_path:str, filename=None, title: s
         title = rf"CV Accuracy with and without Padding and Pooling"
 
     if config['grid_search'] == 'dropout_vs_activations':
-        title = rf"CV Accuracy for Dropout Rates and Activation Functions (20 Epochs)"
+        title = rf"CV Accuracy for Dropout Rates and Activation Functions ({config["epochs"]} Epochs)"
     plt.clf()
     sns.heatmap(df, annot=annot, fmt='.3g')
     plt.title(title)
