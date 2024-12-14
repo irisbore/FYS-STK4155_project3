@@ -2,7 +2,7 @@ seed: 1
 model_type: logreg
 n_bootstraps: 1000
 download_data: True
-save_plot: False
+save_plot: True
 n_splits: 5
 print_interval: 2000
 

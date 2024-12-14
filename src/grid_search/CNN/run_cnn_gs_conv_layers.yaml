@@ -1,6 +1,6 @@
 grid_search: number_of_conv_layers
-save_results: False 
-save_plot: False
+save_results: True
+save_plot: True
 model_type: cnn
 batch_size: 64
 n_splits: 5

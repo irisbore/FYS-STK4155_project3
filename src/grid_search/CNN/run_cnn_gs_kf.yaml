@@ -1,6 +1,6 @@
 grid_search: kernel+filter 
-save_results: False 
-save_plot: False
+save_results: True 
+save_plot: True
 model_type: cnn
 filter_number: [[8, 16], [16, 32], [32, 64]] 
 kernel_size: [3, 5, 7]

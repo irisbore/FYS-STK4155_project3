@@ -70,7 +70,7 @@ if __name__=="__main__":
         mean_accuracy = float(np.mean(total_accuracies))
         fig, ax = plt.subplots()
         sns.histplot(total_accuracies, element="poly", common_norm=False, ax=ax)
-        plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound, upper_bound}] ")
+        plt.title(f"Accuracy on test set, with 95% CI: [{lower_bound:.2f}, {upper_bound:.2f}]")
         plt.savefig(f'{PATH_TO_ROOT}/results/evaluation/logreg_confidence.png')
 
 

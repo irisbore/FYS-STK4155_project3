@@ -1,9 +1,9 @@
 CV Accuracy:
-- 98.0
-- 98.2
+- 98.665
+- 98.92833333333333
 CV Accuracy Std:
-- 0.0
-- 0.4
+- 0.1393835635136987
+- 0.07501851623284886
 Number of Convolutional Layers:
 - 1
 - 2
