@@ -1,6 +1,5 @@
 import sys
 
-import yaml
 import git
 import pandas as pd
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
@@ -8,8 +7,23 @@ sys.path.append(PATH_TO_ROOT)
 
 from src.utils import utils
 
-if __name__== "__main__":
+"""
+This script generates heatmaps to visualize the results of different grid searches for CNN hyperparameter tuning.
 
+It processes and plots heatmaps for the following grid searches:
+1. Number of convolutional layers vs. number of linear layers.
+2. Kernel size vs. filter number.
+3. Pooling vs. padding.
+4. Dropout rate vs. activation function.
+
+For each grid search, the script loads the corresponding results, formats the data, and generates a heatmap, saving each as a PNG file,
+if specified in the config.
+
+Usage:
+    python plot_results.py
+"""
+
+if __name__== "__main__":
      #----------------------------------------------------------------------------------------------------------------------------------------------#
     # Plot first grid search
     initial_config_path = PATH_TO_ROOT + "/src/grid_search/CNN/run_cnn_gs_conv_layers.yaml"
