@@ -26,7 +26,7 @@ Steps:
 7. Performs bootstrapping to estimate the model's test set accuracy with 95% confidence intervals.
 8. Saves the bootstrapped results to a plot file.
 
-The model is saved as 'mnist_net.pth' and the evaluation results are saved as 'cnn_confidence.png'. Both can be found in the results folder. 
+The model is saved as 'mnist_net.pth' and the evaluation results are saved as 'CNN_classwise_acc.png' and 'cnn_confidence.png'. Both can be found in the results folder. 
 The MNIST data set is downloaded to the data folder.
 """
 

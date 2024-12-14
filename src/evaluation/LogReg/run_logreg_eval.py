@@ -25,7 +25,7 @@ Steps:
 6. Performs bootstrapping to estimate the model's test set accuracy with 95% confidence intervals.
 7. Saves the bootstrapped results to a plot file.
 
-The evaluation results are saved as 'logreg_confidence.png'. Both can be found in the results folder. 
+The evaluation results are saved as 'LogReg_classwise_acc.png'' and logreg_confidence.png'. Both can be found in the results folder. 
 The MNIST data set is downloaded to the data folder.
 """
 if __name__=="__main__":
