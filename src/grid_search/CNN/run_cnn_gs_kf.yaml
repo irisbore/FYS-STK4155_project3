@@ -1,5 +1,5 @@
 grid_search: kernel+filter 
-save_results: False # Do not change after Dec 12
+save_results: False 
 save_plot: False
 model_type: cnn
 filter_number: [[8, 16], [16, 32], [32, 64]] 

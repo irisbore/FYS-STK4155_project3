@@ -14,9 +14,22 @@ import git
 import yaml
 
 """
->>> python run_cnn_gs.py —config_path config_name
-example: python3 run_cnn_gs.py --config_path run_cnn_gs_conv_layers.yaml
-""" 
+This script performs a grid search to tune hyperparameters for training a Convolutional Neural Network (CNN) on the MNIST dataset.
+
+It supports the following grid search configurations:
+1. Number of convolutional layers
+2. Kernel size and filter number
+3. Padding vs. pooling
+4. Dropout rate and activation function
+
+The script evaluates each configuration using cross-validation and reports the mean and standard deviation of validation accuracy. 
+Results are saved to a YAML file in the results folder if specified in the configuration.
+
+Usage:
+    python run_cnn_gs.py --config_path <config_file.yaml>
+    Example: python run_cnn_gs.py --config_path run_cnn_gs_conv_layers.yaml
+"""
+
 
 PATH_TO_ROOT = git.Repo(".", search_parent_directories=True).working_dir
 sys.path.append(PATH_TO_ROOT)
@@ -36,8 +49,8 @@ if __name__ == "__main__":
     transform = tv.transforms.Compose([
         tv.transforms.ToTensor()
         ])
-    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=True, download=False, transform=transform) #CHANGE TO DOWNLOAD=FALSE IF PREVIOUSLY RUN
-    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=False,transform=transform, download=True) 
+    trainset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=True, download=True, transform=transform) #CHANGE TO DOWNLOAD=FALSE IF PREVIOUSLY RUN
+    testset = tv.datasets.MNIST(root=PATH_TO_ROOT+'/data/', train=False, download=True, transform=transform) 
     
     #---------------------------------------------------------------------------------------------------------------------------------------------#
     # FIRST GRID SEARCH 
