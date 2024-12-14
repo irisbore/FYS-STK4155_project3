@@ -14,6 +14,17 @@ from src.utils import model_utils
 
 
 def get_bootstrap_sample(dataset: torch.Tensor, config: dict, seed: int) -> DataLoader:
+        """
+        Creates a bootstrap sample from the dataset.
+
+        Args:
+                dataset (torch.Tensor): The dataset to sample from.
+                config (dict): Configuration dictionary containing the batch size.
+                seed (int): Random seed for reproducibility.
+
+        Returns:
+                DataLoader: DataLoader with bootstrap samples.
+        """
         batch_size = config["batch_size"]
         N = len(dataset)
         torch.manual_seed(seed)
@@ -23,6 +34,17 @@ def get_bootstrap_sample(dataset: torch.Tensor, config: dict, seed: int) -> Data
         return dataloader
 
 def bootstrap_test_set(testset: torch.Tensor, model, config: dict) -> List:
+        """
+        Performs bootstrap sampling on the data set and computes accuracies. Varies the seed for each bootstrap run.
+
+        Args:
+                testset (torch.Tensor): The test dataset, this method is only intented for test/validation sets.
+                model: The model to evaluate.
+                config (dict): Configuration dictionary containing the number of bootstraps.
+
+        Returns:
+                List: List of accuracies from each bootstrap sample.
+        """
         total_accuracies = []
         for i in tqdm(range(config["n_bootstraps"])):
                 testloader = get_bootstrap_sample(testset, config, i)
